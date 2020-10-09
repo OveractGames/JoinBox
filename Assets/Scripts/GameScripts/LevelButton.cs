@@ -11,12 +11,15 @@ public class LevelButton : MonoBehaviour
     public TextMeshProUGUI buttonDiscriptionText;
     public ObjectSequenceSystem lockSequence;
     public ObjectSequenceSystem arrowSequence;
-    public int currentIndex;
-    public int startIndex;
-    public int endIndex;
-    public int lastLevel;
+
+    public int completed;
+    public int max;
+
+    public int from;
+    public int to;
+
     public string rangeText;
-    public bool isFinished = false;
+    public bool chapterFinished = false;
     public LevelButton lastChapter;
     public int index;
 
@@ -33,28 +36,20 @@ public class LevelButton : MonoBehaviour
     }
     public void Execute()
     {
-        currentIndex = 0;
-        isFinished = DataManager.Instance.currentLevelIndex >= lastLevel;
-        for (int i = rangeText == "Welcome" ? 0 : lastChapter.endIndex; i <= lastLevel; i++)
-        {
-            if (DataManager.Instance.currentLevelIndex >= i+1)
-                currentIndex++;
-        }
-        buttonDiscriptionText.SetText(rangeText + "\n" + currentIndex + "/" + endIndex);
-        //buttonDiscriptionText.SetText(isFinished ? rangeText + "\n" + "<size=-14>COMPLETED" : rangeText + "\n" + endIndex + "<size=-14> levels to complete!");
-        arrowSequence.setCurrentChildIndex(isFinished ? 1 : 0);
+        chapterFinished = isFinished();
+        arrowSequence.setCurrentChildIndex(chapterFinished ? 1 : 0);
         if (rangeText == "Welcome")
         {
-            if (!isFinished)
+            if (!chapterFinished)
                 lockSequence.setCurrentChildIndex(2);
             else
                 lockSequence.setCurrentChildIndex(1);
         }
         else
         {
-            if (lastChapter.isFinished)
+            if (lastChapter.chapterFinished)
             {
-                if (!isFinished)
+                if (!chapterFinished)
                     lockSequence.setCurrentChildIndex(2);
                 else
                     lockSequence.setCurrentChildIndex(1);
@@ -64,5 +59,27 @@ public class LevelButton : MonoBehaviour
         }
         if (lockSequence.CurrentChildIndex == 2)
             GetComponent<LeanButton>().OnClick.AddListener(DoClose);
+        calcCurrentIndex();
+        buttonDiscriptionText.SetText(!chapterFinished ? rangeText + "\n" + completed + "/" + max : rangeText + "\n" + (completed + 1) + "/" + max + " COMPLETED");
+    }
+
+    private int calcCurrentIndex()
+    {
+        completed = 0;
+        int from = this.from;
+        int to = this.to;
+        for (int i = from; i <= to; i++)
+        {
+            string key = "level" + i.ToString();
+            if (PlayerPrefs.HasKey(key))
+                completed++;
+        }
+        return completed;
+    }
+
+    private bool isFinished()
+    {
+        string key = "level" + to;
+        return PlayerPrefs.HasKey(key);
     }
 }

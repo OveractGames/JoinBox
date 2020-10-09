@@ -1,40 +1,67 @@
-﻿
-using Lean.Gui;
-using System.Collections;
-using System.Collections.Generic;
+﻿using Lean.Gui;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
+using System.Collections.Generic;
 
 public class DataManager : Singleton<DataManager>
 {
-    public ClickText clickText;
-    public LeanWindow errorPanel;
-    public LeanWindow skippedPanel;
-    public LeanWindow helpPanel;
-    public TextMeshProUGUI tipsText;
-    public GameObject noAdsButton;
-    private int tipsAmount = 0;
-
+    public InitScreenManager InitScreen;
+    public int points;
+    public bool testingAd = false;
+    public LeanWindow leanPanel;
+    public LeanWindow failingModal;
+    public Button skipButton;
+    public TextMeshProUGUI levelText;
     public int currentLevelIndex = 0;
 
-    public GameObject[] panels;
-    public GameObject screenshotImg;
-
-    public void AddTips(int amount)
+    private void Start()
     {
-        tipsAmount = PlayerPrefs.GetInt("Tips");
-        tipsAmount += amount;
-        tipsText.SetText(tipsAmount.ToString());
-        PlayerPrefs.SetInt("Tips", tipsAmount);
+        failingModal.OnOn.AddListener(FailingModalOn);
+    }
+
+    private void FailingModalOn()
+    {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            skipButton.interactable = false;
+            Debug.Log("Error. Check internet connection!");
+            return;
+        }
+        skipButton.interactable = true;
+    }
+
+    public void EnableInit()
+    {
+        InitScreen.gameObject.SetActive(true);
+        InitScreen.ShowInitScreen();
+    }
+
+    public void updateLevelText()
+    {
+        levelText.SetText(currentLevelIndex.ToString());
     }
     public void RemoveAds()
     {
         PlayerPrefs.SetString("NO_ADS", "OFF");
-        noAdsButton.SetActive(false);
+        NoAdsButton.Instance.RemoveAds();
     }
-    public void ShowHelpPanel()
+    public void Init(int points)
     {
-        helpPanel.TurnOn();
+        this.points = points;
+        ClickText.Instance.SetText(points);
     }
-
+    public void AddPoints()
+    {
+        points++;
+        ClickText.Instance.SetText(points);
+    }
+    public void takePoints()
+    {
+        if (points == 0)
+            return;
+        points--;
+        ClickText.Instance.SetText(points);
+    }
 }

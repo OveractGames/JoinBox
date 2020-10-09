@@ -1,4 +1,5 @@
-﻿using ScriptUtils.GameUtils;
+﻿using Lean.Gui;
+using ScriptUtils.GameUtils;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,9 +8,11 @@ using UnityEngine.UI;
 
 public class loadingbar : MonoBehaviour
 {
+    public GameObject lean;
     private RectTransform rectComponent;
     private Image imageComp;
     public float speed = 0.0f;
+    public bool initLoad = false;
     private bool loadStart = false;
     public event UnityAction fillDone;
     void Start()
@@ -24,11 +27,22 @@ public class loadingbar : MonoBehaviour
             imageComp.fillAmount = imageComp.fillAmount + Time.deltaTime * speed;
         else
         {
-            if (!loadStart)
+            if (!initLoad)
             {
-                loadStart = true;
-                if (fillDone != null)
-                    fillDone.Invoke();
+                if (!loadStart)
+                {
+                    loadStart = true;
+                    if (fillDone != null)
+                        fillDone.Invoke();
+                }
+            }
+            else
+            {
+                if (!lean.activeSelf)
+                {
+                    lean.SetActive(true);
+                    transform.parent.gameObject.SetActive(false);
+                }
             }
         }
     }

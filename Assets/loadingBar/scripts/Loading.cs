@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using TMPro;
 
 public class Loading : MonoBehaviour
 {
+    public Text txt;
     private RectTransform rectComponent;
     private Image imageComp;
     private bool up;
@@ -18,6 +20,10 @@ public class Loading : MonoBehaviour
         rectComponent = GetComponent<RectTransform>();
         imageComp = rectComponent.GetComponent<Image>();
         up = true;
+    }
+    public void SetText(string text)
+    {
+        txt.text = text;
     }
 
     private void Update()

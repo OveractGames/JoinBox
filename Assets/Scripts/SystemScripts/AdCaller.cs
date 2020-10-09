@@ -12,16 +12,19 @@ public class AdCaller : Singleton<AdCaller>
     private string adId = "3802129";
     public int maxClicks;
     public int currentClickIndex = 0;
-
     public bool showAd = false;
+    public bool skipLevel = false;
     void Start()
     {
         Advertisement.Initialize(adId, true);
     }
     public void ShowAd()
     {
-        //if (PlayerPrefs.HasKey("NO_ADS"))
-        //    return;
+        if (!DataManager.Instance.testingAd)
+        {
+            if (PlayerPrefs.HasKey("NO_ADS"))
+                return;
+        }
         if (Application.internetReachability == NetworkReachability.NotReachable)
         {
             Debug.Log("Error. Check internet connection!");
@@ -35,14 +38,14 @@ public class AdCaller : Singleton<AdCaller>
             Advertisement.Show("video", new ShowOptions() { resultCallback = HandleAdResult });
         }
     }
-    public void ShowRewarded()
+    public void ShowRewarded(bool skip)
     {
         if (Application.internetReachability == NetworkReachability.NotReachable)
         {
             Debug.Log("Error. Check internet connection!");
-            DataManager.Instance.errorPanel.TurnOn();
             return;
         }
+        skipLevel = skip;
         if (Advertisement.IsReady())
         {
             LeanButton[] btns = FindObjectsOfType<LeanButton>();
@@ -54,7 +57,19 @@ public class AdCaller : Singleton<AdCaller>
 
     private void HandleRewardedResult(ShowResult result)
     {
+        showAd = false;
         StartCoroutine(enableMouseEvents(true));
+        switch (result)
+        {
+            case ShowResult.Failed:
+                break;
+            case ShowResult.Finished:
+                if (!skipLevel)
+                    DataManager.Instance.AddPoints();
+                break;
+            case ShowResult.Skipped:
+                break;
+        }
     }
 
     private IEnumerator enableMouseEvents(bool interactable)
@@ -67,29 +82,18 @@ public class AdCaller : Singleton<AdCaller>
 
     private void HandleAdResult(ShowResult result)
     {
+        showAd = false;
         StartCoroutine(enableMouseEvents(true));
     }
-    public void Click(bool next)
+
+    public void Click()
     {
-        Level curr_level = FindObjectOfType<Level>();
         currentClickIndex++;
-        if (next)
+        if (currentClickIndex >= maxClicks)
         {
-            if (currentClickIndex >= maxClicks)
-            {
-                showAd = true;
-                currentClickIndex = 0;
-                ShowAd();
-            }
-        }
-        else
-        {
-            if ((currentClickIndex >= maxClicks) || curr_level.clicks <= 0)
-            {
-                showAd = true;
-                currentClickIndex = 0;
-                ShowAd();
-            }
+            showAd = true;
+            currentClickIndex = 0;
+            ShowAd();
         }
     }
 }

@@ -7,6 +7,9 @@ TagManager:
   - target
   - enemy
   - imune
+  - Enemy
+  - Target
+  - ground
   layers:
   - Default
   - TransparentFX

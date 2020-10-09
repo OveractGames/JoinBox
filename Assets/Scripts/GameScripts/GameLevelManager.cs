@@ -7,22 +7,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using System;
+using System.IO;
+using System.Collections;
 
 public class GameLevelManager : MonoBehaviour
 {
-    public GameObject loadingScreen;
     public AudioClip bgMusic;
     public GameObject starFX;
     public AudioClip click;
     public AudioClip shutterFX;
-    public TextMeshProUGUI[] levelTextIndicators;
-    public GameObject whitePanel;
-    public GameObject backingPanel;
     public GameObject finalScreenshot;
-    public GameObject finishPanel;
+    public TextMeshProUGUI timerText;
+    public TextMeshProUGUI finishedLevelText;
     public RectTransform levelParent;
-    public GameObject menuScreen;
-    public GameObject gameReasonPanel;
+    public DOTweenAnimation menuScreenAnim;
     public GameObject gameScreen;
     public _SettingManager settingManager;
     public InterfaceSountController bg_sound_controller;
@@ -30,16 +28,16 @@ public class GameLevelManager : MonoBehaviour
     public LeanWindow loadingModal;
     public LeanWindow tuttorialModal;
     public LeanWindow backingModal;
-    public LeanWindow scrollLevelModal;
+    public bool levelDone = false;
     public string levelPrefix = "";
     public bool forceTest = false;
     public int currentLevelIndex = 1;
     private Level currentLevel = null;
-    public int availableTips = 1;
     public bool done = false;
     public bool removeLocalStorage = false;
     private FadeScreenSystem FSCreen;
     private LeanButton[] allGameButtons;
+    private bool reset = false;
 
     void Start()
     {
@@ -54,7 +52,6 @@ public class GameLevelManager : MonoBehaviour
             bg_sound_controller.SetMusic(bgMusic);
             bg_sound_controller.PlayMusic(true);
         }
-        backingPanel.SetActive(true);
         if (!PlayerPrefs.HasKey("VOLUME"))
             PlayerPrefs.SetFloat("VOLUME", 0.5f);
         if (!PlayerPrefs.HasKey("SFX"))
@@ -63,7 +60,6 @@ public class GameLevelManager : MonoBehaviour
             PlayerPrefs.SetInt("LEVEL", 1);
         LoadLevel();
         SetSettings();
-        menuScreen.GetComponent<RectTransform>().DOAnchorPosY(-76f, 0.35f).SetEase(Ease.OutBack);
     }
 
 
@@ -73,19 +69,30 @@ public class GameLevelManager : MonoBehaviour
         {
             LoadLevel();
             finalScreenshot.SetActive(false);
-            finishPanel.SetActive(false);
             gameScreen.SetActive(true);
-            menuScreen.SetActive(true);
             backingModal.TurnOff();
             starFX.SetActive(false);
+            DataManager.Instance.leanPanel.gameObject.SetActive(true);
+            DataManager.Instance.leanPanel.TurnOff();
+            menuScreenAnim.DORewind();
+            if (reset)
+            {
+                DataManager.Instance.EnableInit();
+                reset = false;
+            }
+            DataManager.Instance.failingModal.TurnOff();
         }
         if (state == FadeScreenSystem.FadeState.INVISIBLE)
         {
+            loadingModal.TurnOff();
             foreach (LeanButton btn in allGameButtons)
                 btn.interactable = true;
-            menuScreen.GetComponent<RectTransform>().DOAnchorPosY(-76f, 0.35f).SetEase(Ease.OutBack);
+            menuScreenAnim.DOPlay();
+            DataManager.Instance.failingModal.TurnOff();
         }
     }
+
+
     private void SettingManager_ApplySettingsDelegate()
     {
         SetSettings();
@@ -106,36 +113,50 @@ public class GameLevelManager : MonoBehaviour
             PlayerPrefs.DeleteAll();
             removeLocalStorage = false;
         }
+        if (!levelDone)
+        {
+            if (starFX.activeSelf)
+                starFX.SetActive(false);
+        }
+        if (levelDone)
+        {
+            if (DataManager.Instance.failingModal.On)
+                DataManager.Instance.failingModal.TurnOff();
+        }
     }
     public void LoadLevel()
-    {        
-        loadingModal.TurnOff();
+    {
+        //loadingModal.TurnOff();
+
         if (!forceTest)
             currentLevelIndex = PlayerPrefs.GetInt("LEVEL");
         string path = "Levels/" + levelPrefix + (currentLevelIndex.ToString());
         Level level_prefab = Resources.Load<Level>(path);
         DataManager.Instance.currentLevelIndex = currentLevelIndex;
+        DataManager.Instance.updateLevelText();
+        Timer.Instance.ResetTimer();
+        Timer.Instance.StartTimer();
+        DataManager.Instance.failingModal.TurnOff();
         if (currentLevel != null)
             Destroy(currentLevel.gameObject);
         if (level_prefab != null)
         {
-            availableTips = PlayerPrefs.GetInt("Tips");
             currentLevel = Instantiate(level_prefab, Vector3.zero, Quaternion.identity);
             currentLevel.transform.SetParent(levelParent);
             currentLevel.transform.localScale = Vector3.one;
             currentLevel.transform.position = Vector3.zero;
             currentLevel.GetComponent<RectTransform>().anchoredPosition = new Vector3(levelParent.anchoredPosition.x, levelParent.anchoredPosition.y);
             currentLevel.OnLevelDone += Done;
-            levelTextIndicators[0].SetText(currentLevelIndex.ToString());
-            levelTextIndicators[1].transform.parent.gameObject.SetActive(currentLevelIndex > 1);
-            if (levelTextIndicators[1].transform.parent.gameObject.activeSelf)
-                levelTextIndicators[1].SetText((currentLevelIndex - 1).ToString());
-            levelTextIndicators[2].SetText((currentLevelIndex + 1).ToString());
-        }
+            levelDone = false;
+        };
     }
     private void Done()
     {
-        Invoke("Freeze", 2.0f);
+        levelDone = true;
+        DataManager.Instance.leanPanel.gameObject.SetActive(false);
+        DataManager.Instance.failingModal.TurnOff();
+        starFX.SetActive(true);
+        Timer.Instance.StopTimer();
         Rigidbody2D[] rbs = FindObjectsOfType<Rigidbody2D>();
         var s = Resources.Load<AudioClip>("doneFX");
         if (s != null)
@@ -145,11 +166,14 @@ public class GameLevelManager : MonoBehaviour
             rb.simulated = false;
             rb.isKinematic = true;
         }
-        menuScreen.GetComponent<RectTransform>().DOAnchorPosY(300f, 0.35f).SetEase(Ease.InOutBack).OnComplete(() =>
-        {
-            ScreenshootManager.Instance.InitScreenCapture();
-            Invoke("ShowScreenshot", 0.5f);
-        });
+        //timerText.SetText("Time: " + Timer.Instance._textMesh.text);
+        string mark = "red";
+        timerText.SetText("You have completed the level in " + "<color=" + mark + ">" + FindObjectOfType<Level>().clickCount + "</color>" + " moves!" + "\n" + "Time: " + Timer.Instance._textMesh.text);
+        //You Cleared with <color="red">7</color> moves
+        //Time: < color = "green" > 00:35 </ color >
+        finishedLevelText.SetText("Perfect! " + "\n" + "<size='26'>" + "LEVEL " + currentLevelIndex + " COMPLETED!");
+        ScreenshootManager.Instance.InitScreenCapture();
+        Invoke("ShowScreenshot", 0.5f);
     }
     public void OpenPrivacyPolicy()
     {
@@ -158,7 +182,24 @@ public class GameLevelManager : MonoBehaviour
     public void ResetProgress()
     {
         PlayerPrefs.DeleteKey("LEVEL");
-        loadingScreen.SetActive(true);
+        for (int i = 0; i < DataManager.Instance.currentLevelIndex + 5; i++)
+        {
+            string key = "level" + i;
+            if (PlayerPrefs.HasKey(key))
+                PlayerPrefs.DeleteKey(key);
+        }
+        loadingModal.TurnOn();
+        loadingModal.GetComponentInChildren<Loading>().SetText("Reseting...");
+        foreach (var directory in Directory.GetDirectories(Application.persistentDataPath))
+        {
+            DirectoryInfo data_dir = new DirectoryInfo(directory);
+            data_dir.Delete(true);
+        }
+        foreach (var file in Directory.GetFiles(Application.persistentDataPath))
+        {
+            FileInfo file_info = new FileInfo(file);
+            file_info.Delete();
+        }
         Invoke("Start", 2.0f);
     }
     private void ShowScreenshot()
@@ -170,21 +211,17 @@ public class GameLevelManager : MonoBehaviour
             var sp = ScreenshootManager.Instance.LoadSprite(path);
             gameScreen.SetActive(false);
             backingModal.TurnOn();
-            DataManager.Instance.helpPanel.TurnOff();
             finalScreenshot.transform.GetChild(0).GetComponent<Image>().sprite = sp;
         }
         sfx_sound_controller.PlaySound(shutterFX);
     }
-    private void Freeze()
-    {
-        gameReasonPanel.SetActive(true);
-    }
-    public void enableWhitePanel()
-    {
-        whitePanel.SetActive(true);
-    }
     public void Level_OnLevelDone(bool reload)
     {
+        StartCoroutine(loadLevelCoroutine(reload));
+    }
+    public IEnumerator loadLevelCoroutine(bool reload)
+    {
+        yield return new WaitForSeconds(0.1f);
         foreach (LeanButton btn in allGameButtons)
             btn.interactable = false;
         FSCreen.FadeInOut();
@@ -193,10 +230,15 @@ public class GameLevelManager : MonoBehaviour
             currentLevelIndex++;
             PlayerPrefs.SetInt("LEVEL", currentLevelIndex);
             DataManager.Instance.currentLevelIndex = currentLevelIndex;
+            string levelKey = "level" + currentLevelIndex.ToString();
+            PlayerPrefs.SetInt(levelKey, 1);
         }
-        else
-        {
-            CancelInvoke();
-        }
+    }
+    public void ResetLoad()
+    {
+        foreach (LeanButton btn in allGameButtons)
+            btn.interactable = false;
+        FSCreen.FadeInOut();
+        reset = true;
     }
 }
