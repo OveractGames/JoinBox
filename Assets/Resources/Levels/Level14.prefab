@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1399983427055394838}
   - component: {fileID: 8048495793470284776}
   m_Layer: 5
-  m_Name: Level9
+  m_Name: Level14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101,11 +101,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9378fdaefe62d34ea8cace77d79aa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particles: []
   clicks: 5
   clickFX: {fileID: 0}
   player: {fileID: 0}
-  clickText: {fileID: 0}
   BlockSprites: []
+  clickCount: 0
 --- !u!1001 &180843477955296410
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3938,6 +3939,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4842198409499118857}
     m_Modifications:
+    - target: {fileID: 3713709301482687241, guid: 43d732a63f98a5d4593e910ba1397f53,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 697.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4813439796744169642, guid: 43d732a63f98a5d4593e910ba1397f53,
         type: 3}
       propertyPath: m_Size.x

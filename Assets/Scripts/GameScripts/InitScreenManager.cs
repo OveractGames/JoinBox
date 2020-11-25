@@ -7,11 +7,13 @@ using UnityEngine.UI;
 
 public class InitScreenManager : MonoBehaviour
 {
+    public GameLevelManager lManager;
     public RectTransform logo;
     public RectTransform menuRect;
     public LeanButton playButton;
     public GameObject menuScreen;
     public LeanButton[] _myButtons;
+    public LeanWindow noMoreLevelsModal;
     private void Start()
     {
         ShowInitScreen();
@@ -28,6 +30,11 @@ public class InitScreenManager : MonoBehaviour
         {
             gameObject.SetActive(false);
             menuScreen.GetComponent<DOTweenAnimation>().DOPlay();
+            if (!lManager.HasLevels())
+            {
+                noMoreLevelsModal.TurnOn();
+                return;
+            }
             Timer.Instance.StartTimer();
         });
     }

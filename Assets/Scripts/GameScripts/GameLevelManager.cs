@@ -28,6 +28,7 @@ public class GameLevelManager : MonoBehaviour
     public LeanWindow loadingModal;
     public LeanWindow tuttorialModal;
     public LeanWindow backingModal;
+    public LeanWindow noMoreLevelsModal;
     public bool levelDone = false;
     public string levelPrefix = "";
     public bool forceTest = false;
@@ -124,6 +125,13 @@ public class GameLevelManager : MonoBehaviour
                 DataManager.Instance.failingModal.TurnOff();
         }
     }
+
+    public bool HasLevels()
+    {
+        string path = "Levels/" + levelPrefix + (currentLevelIndex.ToString());
+        Level level_prefab = Resources.Load<Level>(path);
+        return level_prefab != null;
+    }
     public void LoadLevel()
     {
         //loadingModal.TurnOff();
@@ -132,6 +140,15 @@ public class GameLevelManager : MonoBehaviour
             currentLevelIndex = PlayerPrefs.GetInt("LEVEL");
         string path = "Levels/" + levelPrefix + (currentLevelIndex.ToString());
         Level level_prefab = Resources.Load<Level>(path);
+        if(level_prefab == null)
+        {
+            if (currentLevel != null)
+                Destroy(currentLevel.gameObject);
+            Debug.Log("Level not exist");
+            noMoreLevelsModal.TurnOn();
+            starFX.gameObject.SetActive(true);
+            return;
+        }
         DataManager.Instance.currentLevelIndex = currentLevelIndex;
         DataManager.Instance.updateLevelText();
         Timer.Instance.ResetTimer();
@@ -149,6 +166,11 @@ public class GameLevelManager : MonoBehaviour
             currentLevel.OnLevelDone += Done;
             levelDone = false;
         };
+    }
+
+    public void OpenAppLink(string link)
+    {
+        Application.OpenURL(link);
     }
     private void Done()
     {

@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public float difference;
     public float velocity;
     public Transform target;
+    private RectTransform rTransform;
 
     private bool failing = false;
     private Rigidbody2D playerRb;
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour
             target = GameObject.Find("target").transform;
         if (playerRb == null)
             Debug.LogError("The object does not contain the component" + typeof(Rigidbody2D));
+        rTransform = GetComponent<RectTransform>();
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -61,6 +63,12 @@ public class Player : MonoBehaviour
                         onLevelFailing.Invoke();
                 }
             }
+        }
+        if(rTransform.anchoredPosition.y <= -450f)
+        {
+            failing = true;
+            if (onLevelFailing != null)
+                onLevelFailing.Invoke();
         }
     }
 }

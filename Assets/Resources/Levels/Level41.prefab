@@ -103,7 +103,6 @@ MonoBehaviour:
   clicks: 4
   clickFX: {fileID: 0}
   player: {fileID: 0}
-  clickText: {fileID: 0}
   BlockSprites: []
   clickCount: 0
 --- !u!1001 &611040709577139900
@@ -971,7 +970,7 @@ PrefabInstance:
     - target: {fileID: 3142204432181495349, guid: 2359ff129fdabba49b6ba9a23b8f3b25,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3163196402533630952, guid: 2359ff129fdabba49b6ba9a23b8f3b25,
         type: 3}
@@ -2718,6 +2717,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3502775362041070778}
     m_Modifications:
+    - target: {fileID: 3713709301482687241, guid: 43d732a63f98a5d4593e910ba1397f53,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 697.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4813439796744169642, guid: 43d732a63f98a5d4593e910ba1397f53,
         type: 3}
       propertyPath: m_Size.x

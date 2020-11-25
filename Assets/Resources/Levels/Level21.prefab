@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1980302768844105165}
   - component: {fileID: 7468321862116402739}
   m_Layer: 5
-  m_Name: Level10
+  m_Name: Level21
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -99,11 +99,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9378fdaefe62d34ea8cace77d79aa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particles: []
   clicks: 6
   clickFX: {fileID: 0}
   player: {fileID: 0}
-  clickText: {fileID: 0}
   BlockSprites: []
+  clickCount: 0
 --- !u!1001 &430835843699594584
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -434,12 +435,12 @@ PrefabInstance:
     - target: {fileID: 6502020751219422866, guid: ce33aabb320d1b5448318166ccece9fc,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 152.9
+      value: -254.3
       objectReference: {fileID: 0}
     - target: {fileID: 6502020751219422866, guid: ce33aabb320d1b5448318166ccece9fc,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 234.4
+      value: 334.84
       objectReference: {fileID: 0}
     - target: {fileID: 6502020751219422866, guid: ce33aabb320d1b5448318166ccece9fc,
         type: 3}
@@ -626,6 +627,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5414521570185365714}
     m_Modifications:
+    - target: {fileID: 3713709301482687241, guid: 43d732a63f98a5d4593e910ba1397f53,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 897.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4813439796744169652, guid: 43d732a63f98a5d4593e910ba1397f53,
         type: 3}
       propertyPath: m_Name
@@ -1334,12 +1340,12 @@ PrefabInstance:
     - target: {fileID: 5245811089231156162, guid: 724795dacbb18264fbbf6582a4f3e524,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -254.29999
+      value: 153.25
       objectReference: {fileID: 0}
     - target: {fileID: 5245811089231156162, guid: 724795dacbb18264fbbf6582a4f3e524,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 336.4
+      value: 234.40002
       objectReference: {fileID: 0}
     - target: {fileID: 5245811089231156162, guid: 724795dacbb18264fbbf6582a4f3e524,
         type: 3}
