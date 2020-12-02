@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundGameManager : MonoBehaviour
+public class SoundGameManager : Singleton<SoundGameManager>
 {
     //private AudioSource _music;
     private AudioSource _sounds;
@@ -19,7 +19,7 @@ public class SoundGameManager : MonoBehaviour
     {
         get => _music.volume;
     }*/
-    private void Awake()
+    private new void Awake()
     {
         // _music = gameObject.AddComponent<AudioSource>();
         // _music.ignoreListenerVolume = true;

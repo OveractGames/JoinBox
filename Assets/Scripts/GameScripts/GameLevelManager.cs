@@ -12,9 +12,7 @@ using System.Collections;
 
 public class GameLevelManager : MonoBehaviour
 {
-    public AudioClip bgMusic;
     public GameObject starFX;
-    public AudioClip click;
     public AudioClip shutterFX;
     public GameObject finalScreenshot;
     public TextMeshProUGUI timerText;
@@ -23,10 +21,7 @@ public class GameLevelManager : MonoBehaviour
     public DOTweenAnimation menuScreenAnim;
     public GameObject gameScreen;
     public _SettingManager settingManager;
-    public InterfaceSountController bg_sound_controller;
-    public SoundGameManager sfx_sound_controller;
     public LeanWindow loadingModal;
-    public LeanWindow tuttorialModal;
     public LeanWindow backingModal;
     public LeanWindow noMoreLevelsModal;
     public bool levelDone = false;
@@ -39,20 +34,13 @@ public class GameLevelManager : MonoBehaviour
     private FadeScreenSystem FSCreen;
     private LeanButton[] allGameButtons;
     private bool reset = false;
-
     void Start()
     {
         allGameButtons = FindObjectsOfType<LeanButton>();
         FSCreen = FadeScreenSystem.CreateFadeScreen(FadeScreenSystem.FadeState.INVISIBLE);
         FSCreen.FadeEvent += FSCreen_FadeEvent;
         FSCreen.transform.position = new Vector3(0f, 0f, -8f);
-        settingManager.ApplySettingsDelegate += SettingManager_ApplySettingsDelegate;
-        tuttorialModal.gameObject.SetActive(!PlayerPrefs.HasKey("TUTTORIAL"));
-        if (bg_sound_controller != null)
-        {
-            bg_sound_controller.SetMusic(bgMusic);
-            bg_sound_controller.PlayMusic(true);
-        }
+     
         if (!PlayerPrefs.HasKey("VOLUME"))
             PlayerPrefs.SetFloat("VOLUME", 0.5f);
         if (!PlayerPrefs.HasKey("SFX"))
@@ -60,7 +48,6 @@ public class GameLevelManager : MonoBehaviour
         if (!PlayerPrefs.HasKey("LEVEL"))
             PlayerPrefs.SetInt("LEVEL", 1);
         LoadLevel();
-        SetSettings();
     }
 
 
@@ -78,7 +65,6 @@ public class GameLevelManager : MonoBehaviour
             menuScreenAnim.DORewind();
             if (reset)
             {
-                DataManager.Instance.EnableInit();
                 reset = false;
             }
             DataManager.Instance.failingModal.TurnOff();
@@ -92,20 +78,9 @@ public class GameLevelManager : MonoBehaviour
             DataManager.Instance.failingModal.TurnOff();
         }
     }
-
-
-    private void SettingManager_ApplySettingsDelegate()
-    {
-        SetSettings();
-    }
     public void TuttorialDone()
     {
         PlayerPrefs.SetInt("TUTTORIAL", 1);
-    }
-    private void SetSettings()
-    {
-        bg_sound_controller.SetMusicVolume(PlayerPrefs.GetFloat("VOLUME"));
-        sfx_sound_controller.SetEffectsVolume(PlayerPrefs.GetInt("SFX") == 1 ? 1.0f : 0.0f);
     }
     private void Update()
     {
@@ -181,8 +156,6 @@ public class GameLevelManager : MonoBehaviour
         Timer.Instance.StopTimer();
         Rigidbody2D[] rbs = FindObjectsOfType<Rigidbody2D>();
         var s = Resources.Load<AudioClip>("doneFX");
-        if (s != null)
-            sfx_sound_controller.PlaySound(s);
         foreach (Rigidbody2D rb in rbs)
         {
             rb.simulated = false;
@@ -235,7 +208,6 @@ public class GameLevelManager : MonoBehaviour
             backingModal.TurnOn();
             finalScreenshot.transform.GetChild(0).GetComponent<Image>().sprite = sp;
         }
-        sfx_sound_controller.PlaySound(shutterFX);
     }
     public void Level_OnLevelDone(bool reload)
     {

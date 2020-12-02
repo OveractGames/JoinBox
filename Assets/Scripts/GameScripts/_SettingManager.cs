@@ -1,57 +1,60 @@
 ﻿using Lean.Gui;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
-
 public class _SettingManager : MonoBehaviour
 {
-    private AudioSource[] allAudioSources;
-    public InterfaceSountController sManager;
-    public LeanWindow settingWindow;
-    public Toggle sfxToggle;
+    public AudioSource sSource;
+    public AudioClip bgMusic;
+    public LeanToggle sfxToggle;
+    public LeanToggle soundsToggle;
+    public LeanToggle vibrationToggle;
     public Slider volumeSlider;
-    public event UnityAction ApplySettingsDelegate;
-    private void Awake()
+    private IEnumerator Start()
     {
-        allAudioSources = FindObjectsOfType(typeof(AudioSource)) as AudioSource[];
-        volumeSlider.onValueChanged.AddListener(delegate { SetVolume(); });
-        sfxToggle.onValueChanged.AddListener(delegate { SetEffects(); });
-        settingWindow.OnOff.AddListener(delegate { ApplySettings(); });
-        settingWindow.OnOn.AddListener(delegate { GetSettings(); });
+        if (!PlayerPrefs.HasKey("VIBRATION")) PlayerPrefs.SetInt("VIBRATION", 1);
+        if (!PlayerPrefs.HasKey("SOUNDS")) PlayerPrefs.SetInt("SOUNDS", 1);
+        if (!PlayerPrefs.HasKey("SFX")) PlayerPrefs.SetInt("SFX", 1);
+        if (!PlayerPrefs.HasKey("BG_VOLUME")) PlayerPrefs.SetFloat("BG_VOLUME", 100);
+        yield return new WaitForSeconds(0.5f);
+
+        volumeSlider.onValueChanged.AddListener(delegate { setVolumeLevel(); });
+        vibrationToggle.Set(PlayerPrefs.GetInt("VIBRATION") == 1);
+        sfxToggle.Set(PlayerPrefs.GetInt("SFX") == 1);
+        soundsToggle.Set(PlayerPrefs.GetInt("SOUNDS") == 1);
+        volumeSlider.value = PlayerPrefs.GetFloat("BG_VOLUME");
+    }
+    public void setVibrationState(bool on)
+    {
+        PlayerPrefs.SetInt("VIBRATION", on ? 1 : 0);
+        if (on)
+            Handheld.Vibrate();
     }
 
-    private void GetSettings()
+    public void setEffectsState(bool on)
     {
-        sfxToggle.isOn = PlayerPrefs.GetInt("SFX") == 1;
-        volumeSlider.value = PlayerPrefs.GetFloat("VOLUME") * 100;
+        PlayerPrefs.SetInt("SFX", on ? 1 : 0);
+        Lean.Transition.Method.LeanPlaySound[] allSFX = FindObjectsOfType<Lean.Transition.Method.LeanPlaySound>();
+        foreach (Lean.Transition.Method.LeanPlaySound sfx in allSFX)
+            sfx.Data.Volume = on ? 100f : 0f;
     }
 
-    private void ApplySettings()
+    public void setSoundState(bool on)
     {
-        if (ApplySettingsDelegate != null)
-            ApplySettingsDelegate.Invoke();
+        sSource.mute = !on;
+        volumeSlider.interactable = on;
+        if (!on)
+            sSource.Stop();
+        else
+            sSource.Play();
+        sSource.volume = volumeSlider.value / 100f;
+        PlayerPrefs.SetInt("SOUNDS", on ? 1 : 0);
     }
 
-    private void SetEffects()
+    public void setVolumeLevel()
     {
-        PlayerPrefs.SetInt("SFX", sfxToggle.isOn ? 1 : 0);
-    }
-
-    private void SetVolume()
-    {
-        var value = volumeSlider.value / 100F;
-        sManager.SetMusicVolume(value);
-        PlayerPrefs.SetFloat("VOLUME", value);
-    }
-
-    public void StopAllAudio(bool stop)
-    {
-        foreach (AudioSource audioS in allAudioSources)
-            audioS.volume = stop ? 0f : 100f;
-        volumeSlider.value = stop ? 0f : 100f;
-        sfxToggle.isOn = !stop;
+        var value = volumeSlider.value / 100f;
+        PlayerPrefs.SetFloat("BG_VOLUME", volumeSlider.value);
+        sSource.volume = value;
     }
 }

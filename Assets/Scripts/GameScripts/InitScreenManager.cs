@@ -4,54 +4,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class InitScreenManager : MonoBehaviour
 {
-    public GameLevelManager lManager;
-    public RectTransform logo;
-    public RectTransform menuRect;
-    public LeanButton playButton;
-    public GameObject menuScreen;
-    public LeanButton[] _myButtons;
-    public LeanWindow noMoreLevelsModal;
-    private void Start()
+    public DOTweenAnimation headerInterfaceTween;
+    public DOTweenAnimation headerGameTween;
+    public Image fadeScreen;
+    public bool canClick = true;
+    public GameObject FX;
+    public GameObject playText;
+    public void hideInterfaceHeader()
     {
-        ShowInitScreen();
+        if (!canClick)
+            return;
+        StartCoroutine(hideInterfaceCoroutine());
+        FX.SetActive(false);
+        playText.SetActive(false);
     }
-    public void DoPlay()
+    public void showInterfaceHeader()
     {
-        logo.DOAnchorPosY(400f, 0.5f).SetEase(Ease.InOutBack);
-        menuRect.DOAnchorPosY(300f, 0.5f).SetEase(Ease.InOutBack);
-        playButton.GetComponent<RectTransform>().DOAnchorPosY(-300f, 0.5f).SetEase(Ease.InOutBack);
-        playButton.interactable = false;
-        foreach (LeanButton btn in _myButtons)
-            btn.interactable = false;
-        GetComponent<Image>().DOFade(0f, 0.5f).SetDelay(0.25f).OnComplete(() =>
-        {
-            gameObject.SetActive(false);
-            menuScreen.GetComponent<DOTweenAnimation>().DOPlay();
-            if (!lManager.HasLevels())
-            {
-                noMoreLevelsModal.TurnOn();
-                return;
-            }
-            Timer.Instance.StartTimer();
+        if (!canClick)
+            return;
+        StartCoroutine(showInterfaceCoroutine());
+        FX.SetActive(true);
+    }
+
+    private IEnumerator showInterfaceCoroutine()
+    {
+        canClick = false;
+        headerGameTween.DOPlayBackwards();
+        yield return new WaitForSeconds(0.25f);
+        headerInterfaceTween.DOPlayForward();
+        fadeScreen.gameObject.SetActive(true);
+        fadeScreen.DOFade(0.35f, 0.5f).OnComplete(() =>
+        { canClick = true;
+            playText.SetActive(true);
         });
-    }
-    public void ShowInitScreen()
-    {
         Timer.Instance.StopTimer();
-        logo.DOAnchorPosY(-400f, 0.5f).SetEase(Ease.OutBack);
-        menuRect.DOAnchorPosY(-53.75f, 0.5f).SetEase(Ease.OutBack);
-        foreach (LeanButton btn in _myButtons)
-            btn.interactable = true;
-        playButton.GetComponent<RectTransform>().DOAnchorPosY(300f, 0.5f).SetEase(Ease.OutBack).OnComplete(() =>
-        {
-            playButton.interactable = true;
-        });
-        GetComponent<Image>().DOFade(1f, 0.5f).OnComplete(() =>
-        {
-            menuScreen.GetComponent<DOTweenAnimation>().DORewind();
+    }
+    private IEnumerator hideInterfaceCoroutine()
+    {
+        canClick = false;
+        headerInterfaceTween.DOPlayBackwards();
+        yield return new WaitForSeconds(0.25f);
+        headerGameTween.DOPlayForward();
+        fadeScreen.DOPlayBackwards();
+        fadeScreen.DOFade(0f, 0.5f).OnComplete(() =>
+        { fadeScreen.gameObject.SetActive(false); canClick = true;
+            Timer.Instance.StartTimer();
         });
     }
 }

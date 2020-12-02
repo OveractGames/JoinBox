@@ -13,9 +13,18 @@ public class InterfaceSountController : MonoBehaviour
     {
         get => AudioListener.volume;
     }
-    public float MusicVolume 
+    public float MusicVolume
     {
         get => _music.volume;
+    }
+
+    public void stopBg()
+    {
+        _music.Stop();
+    }
+    public void playBg()
+    {
+        _music.Play();
     }
     private void Awake()
     {
@@ -32,11 +41,14 @@ public class InterfaceSountController : MonoBehaviour
     }
     public void SetMusicVolume(float newValue)
     {
-        _music.volume = newValue;
+        if (_music != null)
+            _music.volume = newValue;
     }
     public void SetMusic(AudioClip sound)
     {
+        Debug.Log(sound.name);
         _music.clip = sound;
+        Debug.Log(_music.clip.name);
         _musicChanged = true;
     }
     public void PlayMusic(bool play)

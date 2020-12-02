@@ -32,15 +32,9 @@ public class DataManager : Singleton<DataManager>
         skipButton.interactable = true;
     }
 
-    public void EnableInit()
-    {
-        InitScreen.gameObject.SetActive(true);
-        InitScreen.ShowInitScreen();
-    }
-
     public void updateLevelText()
     {
-        levelText.SetText(currentLevelIndex.ToString());
+        levelText.SetText("Level " + currentLevelIndex.ToString());
     }
     public void RemoveAds()
     {
