@@ -46,7 +46,6 @@ public class GameLevelManager : MonoBehaviour
         FSCreen = FadeScreenSystem.CreateFadeScreen(FadeScreenSystem.FadeState.INVISIBLE);
         FSCreen.FadeEvent += FSCreen_FadeEvent;
         FSCreen.transform.position = new Vector3(0f, 0f, -8f);
-
         Init();
     }
 
@@ -187,7 +186,7 @@ public class GameLevelManager : MonoBehaviour
             Destroy(allEnemies[i]);
             EnemyBox enemyBox = allEnemies[i].GetComponent<EnemyBox>();
             ParticleSystem effect = Instantiate(currentLevel.particles[enemyBox.effectIndex], new Vector3(enemyBox.transform.position.x, enemyBox.transform.position.y, -1.5f), Quaternion.identity);
-            Destroy(effect.gameObject, 1.0f);
+            Destroy(effect.gameObject, 2.0f);
             if (PlayerPrefs.GetInt("VIBRATION") == 1)
                 Handheld.Vibrate();
             if (PlayerPrefs.GetInt("SFX") == 1)
