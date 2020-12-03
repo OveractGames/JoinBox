@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
-using DG.Tweening;
-
 public class InitScreenManager : MonoBehaviour
 {
     public DOTweenAnimation headerInterfaceTween;

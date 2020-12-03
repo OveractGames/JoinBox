@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InterfaceSountController : MonoBehaviour
+public class InterfaceSountController : Singleton<InterfaceSountController>
 {
     private AudioSource _music;
     private bool _musicChanged = false;
@@ -26,7 +26,7 @@ public class InterfaceSountController : MonoBehaviour
     {
         _music.Play();
     }
-    private void Awake()
+    private new  void Awake()
     {
         _music = gameObject.AddComponent<AudioSource>();
         _music.ignoreListenerVolume = true;

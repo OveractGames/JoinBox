@@ -9,12 +9,17 @@ using DG.Tweening;
 using System;
 using System.IO;
 using System.Collections;
+using ScriptUtils.Interface;
 
 public class GameLevelManager : MonoBehaviour
 {
     public GameObject starFX;
     public AudioClip shutterFX;
+    public AudioClip finishFX;
+    public GameObject loadingScreen;
     public GameObject finalScreenshot;
+    public GameObject FX_manager;
+    public DOTweenAnimation headerGameTween;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI finishedLevelText;
     public RectTransform levelParent;
@@ -24,6 +29,7 @@ public class GameLevelManager : MonoBehaviour
     public LeanWindow loadingModal;
     public LeanWindow backingModal;
     public LeanWindow noMoreLevelsModal;
+    public LeanWindow finishModal;
     public bool levelDone = false;
     public string levelPrefix = "";
     public bool forceTest = false;
@@ -40,11 +46,13 @@ public class GameLevelManager : MonoBehaviour
         FSCreen = FadeScreenSystem.CreateFadeScreen(FadeScreenSystem.FadeState.INVISIBLE);
         FSCreen.FadeEvent += FSCreen_FadeEvent;
         FSCreen.transform.position = new Vector3(0f, 0f, -8f);
-     
-        if (!PlayerPrefs.HasKey("VOLUME"))
-            PlayerPrefs.SetFloat("VOLUME", 0.5f);
-        if (!PlayerPrefs.HasKey("SFX"))
-            PlayerPrefs.SetInt("SFX", 1);
+
+        Init();
+    }
+
+
+    private void Init()
+    {
         if (!PlayerPrefs.HasKey("LEVEL"))
             PlayerPrefs.SetInt("LEVEL", 1);
         LoadLevel();
@@ -76,6 +84,7 @@ public class GameLevelManager : MonoBehaviour
                 btn.interactable = true;
             menuScreenAnim.DOPlay();
             DataManager.Instance.failingModal.TurnOff();
+            headerGameTween.DOPlayForward();
         }
     }
     public void TuttorialDone()
@@ -84,6 +93,8 @@ public class GameLevelManager : MonoBehaviour
     }
     private void Update()
     {
+        if (reset)
+            return;
         if (removeLocalStorage)
         {
             PlayerPrefs.DeleteAll();
@@ -109,13 +120,11 @@ public class GameLevelManager : MonoBehaviour
     }
     public void LoadLevel()
     {
-        //loadingModal.TurnOff();
-
         if (!forceTest)
             currentLevelIndex = PlayerPrefs.GetInt("LEVEL");
         string path = "Levels/" + levelPrefix + (currentLevelIndex.ToString());
         Level level_prefab = Resources.Load<Level>(path);
-        if(level_prefab == null)
+        if (level_prefab == null)
         {
             if (currentLevel != null)
                 Destroy(currentLevel.gameObject);
@@ -152,23 +161,43 @@ public class GameLevelManager : MonoBehaviour
         levelDone = true;
         DataManager.Instance.leanPanel.gameObject.SetActive(false);
         DataManager.Instance.failingModal.TurnOff();
-        starFX.SetActive(true);
+
         Timer.Instance.StopTimer();
         Rigidbody2D[] rbs = FindObjectsOfType<Rigidbody2D>();
-        var s = Resources.Load<AudioClip>("doneFX");
+        SoundGameManager.Instance.PlaySound(finishFX);
+        headerGameTween.DOPlayBackwards();
         foreach (Rigidbody2D rb in rbs)
         {
             rb.simulated = false;
             rb.isKinematic = true;
         }
-        //timerText.SetText("Time: " + Timer.Instance._textMesh.text);
         string mark = "red";
         timerText.SetText("You have completed the level in " + "<color=" + mark + ">" + FindObjectOfType<Level>().clickCount + "</color>" + " moves!" + "\n" + "Time: " + Timer.Instance._textMesh.text);
-        //You Cleared with <color="red">7</color> moves
-        //Time: < color = "green" > 00:35 </ color >
         finishedLevelText.SetText("Perfect! " + "\n" + "<size='26'>" + "LEVEL " + currentLevelIndex + " COMPLETED!");
-        ScreenshootManager.Instance.InitScreenCapture();
-        Invoke("ShowScreenshot", 0.5f);
+        StartCoroutine(destroyOtherEnemies());
+    }
+
+
+    private IEnumerator destroyOtherEnemies()
+    {
+        GameObject[] allEnemies = GameObject.FindGameObjectsWithTag("enemy");
+        yield return new WaitForSeconds(2.0f);
+        for (int i = 0; i < allEnemies.Length; i++)
+        {
+            Destroy(allEnemies[i]);
+            EnemyBox enemyBox = allEnemies[i].GetComponent<EnemyBox>();
+            ParticleSystem effect = Instantiate(currentLevel.particles[enemyBox.effectIndex], new Vector3(enemyBox.transform.position.x, enemyBox.transform.position.y, -1.5f), Quaternion.identity);
+            Destroy(effect.gameObject, 1.0f);
+            if (PlayerPrefs.GetInt("VIBRATION") == 1)
+                Handheld.Vibrate();
+            if (PlayerPrefs.GetInt("SFX") == 1)
+                SoundGameManager.Instance.PlaySound(shutterFX);
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield return new WaitForSeconds(2.0f);
+        currentLevel.GetComponent<Image>().raycastTarget = false;
+        starFX.SetActive(true);
+        finishModal.TurnOn();
     }
     public void OpenPrivacyPolicy()
     {
@@ -176,38 +205,19 @@ public class GameLevelManager : MonoBehaviour
     }
     public void ResetProgress()
     {
-        PlayerPrefs.DeleteKey("LEVEL");
-        for (int i = 0; i < DataManager.Instance.currentLevelIndex + 5; i++)
-        {
-            string key = "level" + i;
-            if (PlayerPrefs.HasKey(key))
-                PlayerPrefs.DeleteKey(key);
-        }
-        loadingModal.TurnOn();
-        loadingModal.GetComponentInChildren<Loading>().SetText("Reseting...");
-        foreach (var directory in Directory.GetDirectories(Application.persistentDataPath))
-        {
-            DirectoryInfo data_dir = new DirectoryInfo(directory);
-            data_dir.Delete(true);
-        }
-        foreach (var file in Directory.GetFiles(Application.persistentDataPath))
-        {
-            FileInfo file_info = new FileInfo(file);
-            file_info.Delete();
-        }
-        Invoke("Start", 2.0f);
-    }
-    private void ShowScreenshot()
-    {
-        var path = Application.persistentDataPath + "/Screenshot_" + PlayerPrefs.GetInt("LEVEL") + ".png";
-        if (System.IO.File.Exists(path))
-        {
-            finalScreenshot.SetActive(true);
-            var sp = ScreenshootManager.Instance.LoadSprite(path);
-            gameScreen.SetActive(false);
-            backingModal.TurnOn();
-            finalScreenshot.transform.GetChild(0).GetComponent<Image>().sprite = sp;
-        }
+        reset = true;
+        //loadingModal.TurnOn();
+        //loadingModal.GetComponentInChildren<Loading>().SetText("Reseting...");
+        if (currentLevel != null)
+            Destroy(currentLevel.gameObject);
+        bool isBuyed = PlayerPrefs.HasKey("NO_ADS");
+        PlayerPrefs.DeleteAll();
+        if (isBuyed)
+            PlayerPrefs.SetString("NO_ADS", "OFF");
+        Navigator.getInstance().setLoadingScreenPrefab<LoadingScreen>(loadingScreen);
+        Navigator.getInstance().LoadLevel("Init");
+        Destroy(gameObject);
+        Destroy(FX_manager);
     }
     public void Level_OnLevelDone(bool reload)
     {

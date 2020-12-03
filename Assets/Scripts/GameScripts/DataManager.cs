@@ -7,12 +7,11 @@ using System.Collections.Generic;
 
 public class DataManager : Singleton<DataManager>
 {
-    public InitScreenManager InitScreen;
     public int points;
     public bool testingAd = false;
     public LeanWindow leanPanel;
     public LeanWindow failingModal;
-    public Button skipButton;
+    public LeanButton skipButton;
     public TextMeshProUGUI levelText;
     public int currentLevelIndex = 0;
 
