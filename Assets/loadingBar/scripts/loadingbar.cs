@@ -27,22 +27,12 @@ public class loadingbar : MonoBehaviour
             imageComp.fillAmount = imageComp.fillAmount + Time.deltaTime * speed;
         else
         {
-            if (!initLoad)
+            if (!loadStart)
             {
-                if (!loadStart)
-                {
-                    loadStart = true;
-                    if (fillDone != null)
-                        fillDone.Invoke();
-                }
-            }
-            else
-            {
-                if (!lean.activeSelf)
-                {
-                    lean.SetActive(true);
-                    transform.parent.gameObject.SetActive(false);
-                }
+                loadStart = true;
+                if (fillDone != null)
+                    fillDone.Invoke();
+
             }
         }
     }

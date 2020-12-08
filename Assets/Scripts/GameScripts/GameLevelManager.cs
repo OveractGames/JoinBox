@@ -17,7 +17,6 @@ public class GameLevelManager : MonoBehaviour
     public AudioClip shutterFX;
     public AudioClip finishFX;
     public GameObject loadingScreen;
-    public GameObject finalScreenshot;
     public GameObject FX_manager;
     public DOTweenAnimation headerGameTween;
     public TextMeshProUGUI timerText;
@@ -63,7 +62,6 @@ public class GameLevelManager : MonoBehaviour
         if (state == FadeScreenSystem.FadeState.VISIBLE)
         {
             LoadLevel();
-            finalScreenshot.SetActive(false);
             gameScreen.SetActive(true);
             backingModal.TurnOff();
             starFX.SetActive(false);

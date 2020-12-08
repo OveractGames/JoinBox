@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Advertisements;
 using UnityEngine.UI;
-#if HAS_IAP
 public class AdCaller : Singleton<AdCaller>
 {
     private string adId = "3802129";
@@ -97,4 +96,3 @@ public class AdCaller : Singleton<AdCaller>
         }
     }
 }
-#endif

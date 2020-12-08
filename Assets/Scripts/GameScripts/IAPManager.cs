@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
-#if HAS_IAP
 public class IAPManager : Singleton<IAPManager>, IStoreListener
 {
     private static IStoreController m_StoreController;          // The Unity Purchasing system.
@@ -172,4 +171,3 @@ public class IAPManager : Singleton<IAPManager>, IStoreListener
         Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
     }
 }
-#endif
