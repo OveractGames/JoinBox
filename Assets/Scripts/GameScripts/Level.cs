@@ -63,17 +63,28 @@ public class Level : MonoBehaviour
 
     private void box_click(GameObject target)
     {
-        if (DataManager.Instance.points >= 1)
+        ParticleSystem effect = null;
+        if (PlayerPrefs.HasKey("HAS_MOVES"))
         {
-            clickCount++;
-            target.SetActive(false);
-            ParticleSystem effect = Instantiate(particles[target.GetComponent<EnemyBox>().effectIndex],
-                new Vector3(target.transform.position.x, target.transform.position.y, -1.5f), Quaternion.identity) as ParticleSystem;
-            Destroy(effect.gameObject, 1.5f);
-            DataManager.Instance.takePoints();
+            if (DataManager.Instance.points >= 1)
+            {
+                clickCount++;
+                target.SetActive(false);
+                effect = Instantiate(particles[target.GetComponent<EnemyBox>().effectIndex],
+                    new Vector3(target.transform.position.x, target.transform.position.y, -1.5f), Quaternion.identity) as ParticleSystem;
+                Destroy(effect.gameObject, 1.5f);
+                DataManager.Instance.takePoints();
+            }
+            else
+                DataManager.Instance.leanPanel.TurnOn();
         }
         else
-            DataManager.Instance.leanPanel.TurnOn();
+        {
+            target.SetActive(false);
+            effect = Instantiate(particles[target.GetComponent<EnemyBox>().effectIndex],
+                new Vector3(target.transform.position.x, target.transform.position.y, -1.5f), Quaternion.identity) as ParticleSystem;
+            Destroy(effect.gameObject, 1.5f);
+        }
         var status = PlayerPrefs.GetInt("SFX");
         if (status == 1)
             sManager.PlaySound(clickFX);
@@ -103,7 +114,7 @@ public class Level : MonoBehaviour
             {
                 ClickAction action = enemy.GetComponent<ClickAction>();
                 action.interactable = false;
-            }             
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ public class DataManager : Singleton<DataManager>
     }
     public void AddPoints()
     {
-        points++;
+        points += UnityEngine.Random.Range(2, 4);
         ClickText.Instance.SetText(points);
     }
     public void takePoints()

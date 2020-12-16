@@ -8,8 +8,8 @@ public class BuyButton : MonoBehaviour
     private string defaultText;
     void Start()
     {
-        defaultText = priceText.text;
-        StartCoroutine(LoadPriceRoutine());
+        //defaultText = priceText.text;
+        //StartCoroutine(LoadPriceRoutine());
     }
     public void ClickBuy()
     {

@@ -2,8 +2,13 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Lean.Transition;
+using Lean.Transition.Method;
+
 public class _SettingManager : MonoBehaviour
 {
+    public LeanPlaySound reloadBtnSoundTransition;
+    public LeanPlaySound pauseBtnSoundTransition;
     public AudioSource sSource;
     public AudioClip bgMusic;
     public LeanToggle sfxToggle;
@@ -23,6 +28,10 @@ public class _SettingManager : MonoBehaviour
         sfxToggle.Set(PlayerPrefs.GetInt("SFX") == 1);
         soundsToggle.Set(PlayerPrefs.GetInt("SOUNDS") == 1);
         volumeSlider.value = PlayerPrefs.GetFloat("BG_VOLUME");
+
+        LeanPlaySound[] allTransitionSounds = FindObjectsOfType<LeanPlaySound>();
+        foreach (LeanPlaySound s in allTransitionSounds)
+            s.Data.Volume = PlayerPrefs.HasKey("SFX") ? 100f : 0f;
     }
     public void setVibrationState(bool on)
     {
@@ -37,6 +46,8 @@ public class _SettingManager : MonoBehaviour
         Lean.Transition.Method.LeanPlaySound[] allSFX = FindObjectsOfType<Lean.Transition.Method.LeanPlaySound>();
         foreach (Lean.Transition.Method.LeanPlaySound sfx in allSFX)
             sfx.Data.Volume = on ? 100f : 0f;
+        reloadBtnSoundTransition.Data.Volume = on ? 100f : 0f;
+        pauseBtnSoundTransition.Data.Volume = on ? 100f : 0f;
     }
 
     public void setSoundState(bool on)

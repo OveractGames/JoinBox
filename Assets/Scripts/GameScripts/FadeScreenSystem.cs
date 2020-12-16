@@ -37,6 +37,7 @@ namespace ScriptUtils.Visual
             Sprite sprite = Sprite.Create(tempTexture, new Rect(Vector2.zero, new Vector2(1, 1)), new Vector2(0.5f, 0.5f));
             sRenderer.sprite = sprite;
             sRenderer.sortingLayerName = layerName;
+            sRenderer.sortingOrder = 9999;
             transform.localScale = new Vector3(2000f, 2000f, 1f);
             if (currentState == FadeState.INVISIBLE)
             {

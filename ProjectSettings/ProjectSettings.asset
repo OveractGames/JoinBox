@@ -40,7 +40,7 @@ PlayerSettings:
     width: 0.88709676
     height: 0.7894737
   m_SplashScreenLogos:
-  - logo: {fileID: 21300000, guid: cbd59ef14a2bdcf4cbfdb30b2661c663, type: 3}
+  - logo: {fileID: 21300000, guid: 7f61b4e61d5a1f14297052068567b75c, type: 3}
     duration: 3
   - logo: {fileID: 21300000, guid: b065041addb3ef542b7653d5d5ef72fb, type: 3}
     duration: 2
@@ -124,7 +124,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.14
+  bundleVersion: 1.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -170,7 +170,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.overactgames.joinbox
   buildNumber: {}
-  AndroidBundleVersionCode: 14
+  AndroidBundleVersionCode: 16
   AndroidMinSdkVersion: 19
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1

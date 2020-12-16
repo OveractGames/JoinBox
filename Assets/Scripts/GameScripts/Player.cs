@@ -48,22 +48,24 @@ public class Player : MonoBehaviour
     {
         if (target == null)
             target = GameObject.Find("target").transform;
+
+
         if (failing || targetHit)
             return;
-        if (grounded)
-        {
-            velocity = playerRb.velocity.x;
-            if (playerRb.velocity.x == 0)
-            {
-                delay -= Time.deltaTime;
-                if (delay <= 0)
-                {
-                    failing = true;
-                    if (onLevelFailing != null)
-                        onLevelFailing.Invoke();
-                }
-            }
-        }
+        //if (grounded)
+        //{
+        //    velocity = playerRb.velocity.x;
+        //    if (playerRb.velocity.x == 0)
+        //    {
+        //        delay -= Time.deltaTime;
+        //        if (delay <= 0)
+        //        {
+        //            failing = true;
+        //            if (onLevelFailing != null)
+        //                onLevelFailing.Invoke();
+        //        }
+        //    }
+        //}
         if(rTransform.anchoredPosition.y <= -450f)
         {
             failing = true;

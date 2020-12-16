@@ -10,14 +10,12 @@ public class InitScreenManager : MonoBehaviour
     public DOTweenAnimation headerGameTween;
     public Image fadeScreen;
     public bool canClick = true;
-    public GameObject FX;
     public GameObject playText;
     public void hideInterfaceHeader()
     {
         if (!canClick)
             return;
         StartCoroutine(hideInterfaceCoroutine());
-        FX.SetActive(false);
         playText.SetActive(false);
     }
     public void showInterfaceHeader()
@@ -25,7 +23,6 @@ public class InitScreenManager : MonoBehaviour
         if (!canClick)
             return;
         StartCoroutine(showInterfaceCoroutine());
-        FX.SetActive(true);
     }
 
     private IEnumerator showInterfaceCoroutine()
