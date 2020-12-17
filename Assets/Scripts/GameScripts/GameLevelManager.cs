@@ -19,6 +19,7 @@ public class GameLevelManager : MonoBehaviour
     public GameObject movesLayout;
     public AudioClip shutterFX;
     public AudioClip finishFX;
+    public GameObject hand;
     public GameObject loadingScreen;
     public GameObject FX_manager;
     public Transform notificationPanel;
@@ -34,12 +35,15 @@ public class GameLevelManager : MonoBehaviour
     public LeanWindow noMoreLevelsModal;
     public LeanWindow finishModal;
     public bool levelDone = false;
+    public bool _noMoreMoves = false;
     public string levelPrefix = "";
     public bool forceTest = false;
     public int currentLevelIndex = 1;
+    public float reloadDelay = 3.0f;
     private Level currentLevel = null;
     public bool done = false;
     public bool removeLocalStorage = false;
+    public bool isReloading = false;
     private FadeScreenSystem FSCreen;
     private LeanButton[] allGameButtons;
     private bool reset = false;
@@ -50,7 +54,7 @@ public class GameLevelManager : MonoBehaviour
     void Start()
     {
         allGameButtons = FindObjectsOfType<LeanButton>();
-        FSCreen = FadeScreenSystem.CreateFadeScreen(FadeScreenSystem.FadeState.INVISIBLE, "UI");
+        FSCreen = FadeScreenSystem.CreateFadeScreen(FadeScreenSystem.FadeState.INVISIBLE, "Foreground99");
         FSCreen.FadeEvent += FSCreen_FadeEvent;
         FSCreen.transform.position = new Vector3(0f, 0f, -8f);
         Init();
@@ -119,6 +123,15 @@ public class GameLevelManager : MonoBehaviour
             if (DataManager.Instance.failingModal.On)
                 DataManager.Instance.failingModal.TurnOff();
         }
+        if (levelDone)
+            hand.SetActive(false);
+        _noMoreMoves = noMoreMoves();
+        if (_noMoreMoves && !levelDone)
+        {
+            hand.SetActive(false);
+            if (!isReloading)
+                StartCoroutine(noMoreMovesCoroutine());
+        }
     }
 
     public bool HasLevels()
@@ -173,6 +186,11 @@ public class GameLevelManager : MonoBehaviour
             currentLevel.clicks = levelMovesCount[currentLevelIndex - 1];
             currentLevel.OnLevelDone += Done;
             levelDone = false;
+            isReloading = false;
+            if (currentLevel.hasTutorial)
+                hand.SetActive(true);
+            else
+                hand.SetActive(false);
         };
     }
 
@@ -256,8 +274,33 @@ public class GameLevelManager : MonoBehaviour
         Destroy(gameObject);
         Destroy(FX_manager);
     }
+
+    private bool noMoreMoves()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
+        GameObject[] imuneBlocks = GameObject.FindGameObjectsWithTag("imune");
+        List<GameObject> allEnemies = new List<GameObject>();
+        allEnemies.AddRange(enemies);
+        allEnemies.AddRange(imuneBlocks);
+        return allEnemies.Count == 0;
+    }
+
+    private IEnumerator noMoreMovesCoroutine()
+    {
+        isReloading = true;
+        yield return new WaitForSeconds(reloadDelay);
+
+        Rigidbody2D playerRb = FindObjectOfType<Player>().GetComponent<Rigidbody2D>();
+        if (playerRb != null)
+        {
+            while (playerRb.velocity.x != 0)
+                yield return null;
+        }
+        Level_OnLevelDone(true);
+    }
     public void Level_OnLevelDone(bool reload)
     {
+        isReloading = reload;
         StartCoroutine(loadLevelCoroutine(reload));
     }
     public IEnumerator loadLevelCoroutine(bool reload)

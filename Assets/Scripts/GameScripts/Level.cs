@@ -18,6 +18,7 @@ public class Level : MonoBehaviour
     Randomizer spriteRandom;
     public Sprite[] BlockSprites;
     public int clickCount = 0;
+    public bool hasTutorial = false;
     private void Awake()
     {
         if (transform.GetChild(0).name == "Grid")
@@ -64,11 +65,17 @@ public class Level : MonoBehaviour
     private void box_click(GameObject target)
     {
         ParticleSystem effect = null;
+        
+        if (hasTutorial)
+        {
+            if (target != Tutorial.Instance.getCurrentTarget())
+                return;
+        }
+        clickCount++;
         if (PlayerPrefs.HasKey("HAS_MOVES"))
         {
             if (DataManager.Instance.points >= 1)
             {
-                clickCount++;
                 target.SetActive(false);
                 effect = Instantiate(particles[target.GetComponent<EnemyBox>().effectIndex],
                     new Vector3(target.transform.position.x, target.transform.position.y, -1.5f), Quaternion.identity) as ParticleSystem;
@@ -77,6 +84,10 @@ public class Level : MonoBehaviour
             }
             else
                 DataManager.Instance.leanPanel.TurnOn();
+            if (hasTutorial)
+            {
+                Tutorial.Instance.MoveHand(clickCount);
+            }
         }
         else
         {
@@ -84,6 +95,10 @@ public class Level : MonoBehaviour
             effect = Instantiate(particles[target.GetComponent<EnemyBox>().effectIndex],
                 new Vector3(target.transform.position.x, target.transform.position.y, -1.5f), Quaternion.identity) as ParticleSystem;
             Destroy(effect.gameObject, 1.5f);
+        }
+        if (hasTutorial)
+        {
+            Tutorial.Instance.MoveHand(clickCount);
         }
         var status = PlayerPrefs.GetInt("SFX");
         if (status == 1)

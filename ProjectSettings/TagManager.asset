@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - Target
   - ground
+  - hand
   layers:
   - Default
   - TransparentFX
@@ -49,4 +50,10 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 2783008917
+    locked: 0
+  - name: Foreground
+    uniqueID: 2108340753
+    locked: 0
+  - name: Foreground99
+    uniqueID: 260852835
     locked: 0

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+#if HAS_ADS
 public class BuyButton : MonoBehaviour
 {
     public TextMeshProUGUI priceText;
@@ -24,3 +25,4 @@ public class BuyButton : MonoBehaviour
         priceText.SetText(defaultText + " " + loadedPrice);
     }
 }
+#endif
