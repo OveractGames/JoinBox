@@ -32,7 +32,7 @@ public class InitScreenManager : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         headerInterfaceTween.DOPlayForward();
         fadeScreen.gameObject.SetActive(true);
-        fadeScreen.DOFade(0.35f, 0.5f).OnComplete(() =>
+        fadeScreen.DOFade(0.75f, 0.5f).OnComplete(() =>
         { canClick = true;
             playText.SetActive(true);
         });

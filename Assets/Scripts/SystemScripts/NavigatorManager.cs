@@ -9,6 +9,7 @@ using DG.Tweening;
 
 public class NavigatorManager : Singleton<NavigatorManager>
 {
+    public GameObject starsEffect;
     public loadingbar vicaBar;
     public GameObject loadingScreen;
 
@@ -28,5 +29,13 @@ public class NavigatorManager : Singleton<NavigatorManager>
         {
             Navigator.getInstance().LoadLevel("GameScene");
         });
+    }
+
+    public void Explode(Transform target)
+    {
+        GameObject effect =  Instantiate(starsEffect, target.position, Quaternion.identity);
+        Destroy(effect, 1.5f);
+        target.DOKill();
+        Destroy(target.gameObject);
     }
 }

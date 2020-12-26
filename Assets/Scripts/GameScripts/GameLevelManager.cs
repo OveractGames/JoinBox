@@ -16,7 +16,7 @@ using System.Text;
 public class GameLevelManager : MonoBehaviour
 {
     public GameObject starFX;
-    public GameObject movesLayout;
+    public DOTweenAnimation movesLayout;
     public AudioClip shutterFX;
     public AudioClip finishFX;
     public GameObject loadingScreen;
@@ -94,6 +94,11 @@ public class GameLevelManager : MonoBehaviour
             menuScreenAnim.DOPlay();
             DataManager.Instance.failingModal.TurnOff();
             headerGameTween.DOPlayForward();
+            if (PlayerPrefs.HasKey("HAS_MOVES"))
+            {
+                movesLayout.transform.localScale = Vector3.one;
+                movesLayout.DOPlayForward();
+            }
         }
     }
     public void TuttorialDone()
@@ -149,13 +154,13 @@ public class GameLevelManager : MonoBehaviour
         DataManager.Instance.failingModal.TurnOff();
         if (currentLevel != null)
             Destroy(currentLevel.gameObject);
-        if (PlayerPrefs.HasKey("HAS_MOVES"))
-            movesLayout.transform.localScale = Vector3.one;
         if (currentLevelIndex >= 20 && !PlayerPrefs.HasKey("HAS_MOVES"))
         {
             Debug.Log("Show notification");
             notificationPanel.localScale = Vector3.one;
             PlayerPrefs.SetInt("HAS_MOVES", 1);
+            movesLayout.transform.localScale = Vector3.one;
+            movesLayout.DOPlayForward();
             movesLayout.transform.localScale = Vector3.one;
             notificationPanel.DOLocalMoveX(100f, 0.25f).SetDelay(1.5f).SetEase(Ease.OutCubic);
             notificationPanel.DOLocalMoveX(720f, 0.25f).SetDelay(12.0f).SetEase(Ease.OutBack).OnComplete(() =>
@@ -182,6 +187,7 @@ public class GameLevelManager : MonoBehaviour
     }
     private void Done()
     {
+        movesLayout.DOPlayBackwards();
         levelDone = true;
         DataManager.Instance.leanPanel.gameObject.SetActive(false);
         DataManager.Instance.failingModal.TurnOff();
@@ -197,7 +203,7 @@ public class GameLevelManager : MonoBehaviour
             rb.isKinematic = true;
         }
         string mark = "red";
-        timerText.SetText("You have completed the level in " + "<color=" + mark + ">" + FindObjectOfType<Level>().clickCount + "</color>" + " moves!" + "\n" + "Time: " + Timer.Instance._textMesh.text);
+        //timerText.SetText("You have completed the level in " + "<color=" + mark + ">" + FindObjectOfType<Level>().clickCount + "</color>" + " moves!" + "\n" + "Time: " + Timer.Instance._textMesh.text);
         finishedLevelText.SetText("LEVEL " + currentLevelIndex + " COMPLETED!");
         StartCoroutine(destroyOtherEnemies());
     }
