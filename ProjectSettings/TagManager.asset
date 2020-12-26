@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - Target
   - ground
+  - hand
   layers:
   - Default
   - TransparentFX

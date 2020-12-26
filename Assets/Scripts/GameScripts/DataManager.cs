@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 public class DataManager : Singleton<DataManager>
 {
+    public GameObject imuneNotificationPanel;
     public int points;
     public bool testingAd = false;
     public LeanWindow leanPanel;

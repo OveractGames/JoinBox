@@ -53,8 +53,15 @@ public class GameLevelManager : MonoBehaviour
         FSCreen = FadeScreenSystem.CreateFadeScreen(FadeScreenSystem.FadeState.INVISIBLE, "UI");
         FSCreen.FadeEvent += FSCreen_FadeEvent;
         FSCreen.transform.position = new Vector3(0f, 0f, -8f);
+        DataManager.Instance.failingModal.OnOn.AddListener(LevelFailed);
         Init();
     }
+
+    private void LevelFailed()
+    {
+        Freeze();
+    }
+
     public void GetString(params object[] args)
     {
         var sb = new StringBuilder();
@@ -208,6 +215,15 @@ public class GameLevelManager : MonoBehaviour
         StartCoroutine(destroyOtherEnemies());
     }
 
+    public void Freeze()
+    {
+        Rigidbody2D[] rbs = FindObjectsOfType<Rigidbody2D>();
+        foreach (Rigidbody2D rb in rbs)
+        {
+            rb.simulated = false;
+            rb.isKinematic = true;
+        }
+    }
 
     private IEnumerator destroyOtherEnemies()
     {

@@ -11,13 +11,17 @@ public class Level : MonoBehaviour
     public ParticleSystem[] particles;
     public int clicks = 5;
     public AudioClip clickFX;
-    List<GameObject> enemies = new List<GameObject>();
+    public List<GameObject> enemies = new List<GameObject>();
     public Player player;
     public event UnityAction OnLevelDone;
     SoundGameManager sManager;
     Randomizer spriteRandom;
     public Sprite[] BlockSprites;
     public int clickCount = 0;
+    public bool hasTutorial = false;
+
+    private Vector3 handStartPos;
+    private int tutorialIndex = 0;
     private void Awake()
     {
         if (transform.GetChild(0).name == "Grid")
@@ -45,6 +49,15 @@ public class Level : MonoBehaviour
                 player.onLevelFailing += Player_onLevelFailing;
             }
         }
+        if (!PlayerPrefs.HasKey("IMUNE"))
+        {
+            bool hasImune = GameObject.FindGameObjectWithTag("imune");
+            if (hasImune)
+            {
+                PlayerPrefs.SetInt("IMUNE", 1);
+                DataManager.Instance.imuneNotificationPanel.SetActive(true);
+            }
+        }
         foreach (GameObject enemy in enemies)
         {
             enemy.AddComponent<ClickAction>();
@@ -52,6 +65,11 @@ public class Level : MonoBehaviour
             enemy.GetComponent<ClickAction>().ClickEvent += box_click;
             if (enemy.GetComponent<BoxColliderResizer>() == null)
                 enemy.AddComponent<BoxColliderResizer>();
+        }
+        if (hasTutorial)
+        {
+            Tutorial.Instance.SetState(true);
+            Tutorial.Instance.SetPosition(enemies[0].transform);
         }
         DataManager.Instance.Init(clicks);
     }
@@ -64,6 +82,14 @@ public class Level : MonoBehaviour
     private void box_click(GameObject target)
     {
         ParticleSystem effect = null;
+        if (hasTutorial)
+        {
+            if (target != enemies[tutorialIndex])
+                return;
+            if (tutorialIndex < enemies.Count - 1)
+                tutorialIndex++;
+            Tutorial.Instance.SetPosition(enemies[tutorialIndex].transform);
+        }
         if (PlayerPrefs.HasKey("HAS_MOVES"))
         {
             if (DataManager.Instance.points >= 1)
@@ -77,6 +103,7 @@ public class Level : MonoBehaviour
             }
             else
                 DataManager.Instance.leanPanel.TurnOn();
+
         }
         else
         {
@@ -85,6 +112,7 @@ public class Level : MonoBehaviour
                 new Vector3(target.transform.position.x, target.transform.position.y, -1.5f), Quaternion.identity) as ParticleSystem;
             Destroy(effect.gameObject, 1.5f);
         }
+
         var status = PlayerPrefs.GetInt("SFX");
         if (status == 1)
             sManager.PlaySound(clickFX);
@@ -96,6 +124,10 @@ public class Level : MonoBehaviour
             if (enemy != null)
                 enemy.GetComponent<ClickAction>().levelDone = true;
         }
+        if (hasTutorial)
+            Tutorial.Instance.ResetPosition();
+        else
+            Tutorial.Instance.SetState(false);
         if (OnLevelDone != null)
             OnLevelDone.Invoke();
     }
