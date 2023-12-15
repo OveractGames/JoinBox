@@ -1,0 +1,38 @@
+
+FONTS USED: 
+
+------------------------------------------------------------------
+
+Fredoka One fONT
+Designed by Milena Brandao
+
+https://fonts.google.com/specimen/Fredoka+One
+
+-----------------------------------------------------------------
+
+Forest Match 3 Game Gui Assets / includes: graphics, buttons, objects, mobile game buttons, share options, menus, backgrounds, Screen samples, and much more elements.
+
+01- Main screen
+02- Game screen sample 1
+03- Game screen sample 2
+04- Level goal screen
+05- Level completed screen
+06- Level failed screen
+07- Out of moves screen
+08- Profile screen
+09- Lives shop screen
+10- Coin shop screen
+11- Reward screen
+12- Wheel screen
+
+
+Full EPS vector, so you can scale it at any size, without losing it’s quality. FULLY CUSTOMIZABLE (colors, sizes, basicly everything is editable..)
+
+includes: Adobe Illustrator EPS files + PNG images.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Thanks for purchasing my item!
+
+Feel free to contact me anytime:
+dangladasapo@gmail.com
