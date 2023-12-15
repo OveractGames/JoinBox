@@ -100,6 +100,8 @@ MonoBehaviour:
   blocks: []
   player: {fileID: 0}
   target: {fileID: 0}
+  levelIndex: 4
+  moves: 3
 --- !u!1001 &512644277275859170
 PrefabInstance:
   m_ObjectHideFlags: 0

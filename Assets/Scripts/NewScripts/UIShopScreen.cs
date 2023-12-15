@@ -30,8 +30,8 @@ public class UIShopScreen : UIScreen
     private void BuyPack(int index, int coins)
     {
         _coinsBought = coins;
-        IAPManager.Instance.BuyProduct(index);
-        IAPManager.Instance.OnPurchaseComplete += PackPurchaseCompleted;
+       // IAPManager.Instance.BuyProduct(index);
+       // IAPManager.Instance.OnPurchaseComplete += PackPurchaseCompleted;
     }
 
     private void PackPurchaseCompleted()

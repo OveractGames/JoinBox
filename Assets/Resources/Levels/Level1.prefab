@@ -94,8 +94,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9378fdaefe62d34ea8cace77d79aa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _blocks: []
-  _player: {fileID: 0}
+  blocks: []
+  player: {fileID: 0}
+  target: {fileID: 0}
+  levelIndex: 1
+  moves: 1
 --- !u!1001 &735109057182378459
 PrefabInstance:
   m_ObjectHideFlags: 0

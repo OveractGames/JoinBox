@@ -19,8 +19,18 @@ public interface ILevelFallListener
 public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListener, ILevelFallListener
 {
     [SerializeField] private DestructibleBlock[] blocks;
+
     [SerializeField] private PlayerTarget player;
+
     [SerializeField] private GameObject target;
+
+    [SerializeField] private int levelIndex;
+    [SerializeField] private int moves;
+
+    public bool IsComplete { get; private set; }
+
+    public int Moves { get => moves; private set => moves = value; }
+    public int LevelIndex { get => levelIndex; private set => levelIndex = value; }
 
     public event Action<Transform> OnBlockDestroyEvent;
     public event Action LevelComplete;
@@ -59,12 +69,12 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
                 block.Freeze();
             }
         }
+        IsComplete = true;
         LevelComplete?.Invoke();
     }
 
     private void OnBlockClick(GameObject block)
     {
-        Destroy(block);
         OnBlockDestroyEvent?.Invoke(block.transform);
     }
 
