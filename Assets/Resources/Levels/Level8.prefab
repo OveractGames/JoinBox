@@ -97,13 +97,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9378fdaefe62d34ea8cace77d79aa7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particles: []
-  clicks: 3
-  clickFX: {fileID: 0}
+  blocks: []
   player: {fileID: 0}
-  BlockSprites: []
-  clickCount: 0
-  hasTutorial: 0
+  target: {fileID: 0}
+  moves: 4
 --- !u!1001 &1302452352496834499
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1369,7 +1366,7 @@ PrefabInstance:
     - target: {fileID: 3142204432181495349, guid: 2359ff129fdabba49b6ba9a23b8f3b25,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3163196402533630952, guid: 2359ff129fdabba49b6ba9a23b8f3b25,
         type: 3}

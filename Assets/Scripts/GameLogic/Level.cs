@@ -24,13 +24,11 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
 
     [SerializeField] private GameObject target;
 
-    [SerializeField] private int levelIndex;
     [SerializeField] private int moves;
 
     public bool IsComplete { get; private set; }
 
-    public int Moves { get => moves; private set => moves = value; }
-    public int LevelIndex { get => levelIndex; private set => levelIndex = value; }
+    public int Moves { get => 20; private set => moves = value; }
 
     public event Action<Transform> OnBlockDestroyEvent;
     public event Action LevelComplete;
@@ -41,6 +39,14 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
         blocks = GetComponentsInChildren<DestructibleBlock>();
         player = GetComponentInChildren<PlayerTarget>();
         target = GameObject.FindGameObjectWithTag("target");
+        Moves = 20;//testing only
+        foreach(Transform t in transform)
+        {
+            if (t.name.StartsWith("Grid") || t.name.StartsWith("grid"))
+            {
+                t.gameObject.SetActive(false);
+            }
+        }
     }
 
     private void Start()
@@ -73,6 +79,19 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
         LevelComplete?.Invoke();
     }
 
+    public void DestroyAll()
+    {
+        player.OnTargetFound -= OnLevelDone;
+        foreach (DestructibleBlock block in blocks)
+        {
+            if (block)
+            {
+                block.OnBlockClickEvent -= OnBlockClick;
+                Destroy(block.gameObject);
+            }
+        }
+    }
+
     private void OnBlockClick(GameObject block)
     {
         OnBlockDestroyEvent?.Invoke(block.transform);
@@ -93,6 +112,11 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
                 block.Freeze();
             }
         }
+        if (target)
+        {
+            target.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+        }
+        player.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
     }
 
     public void Unfreeze()
@@ -104,6 +128,11 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
                 block.IsBlockFrozen = false;
             }
         }
+        if (target)
+        {
+            target.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        }
+        player.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
     }
 
     private void Fall(GameObject target)

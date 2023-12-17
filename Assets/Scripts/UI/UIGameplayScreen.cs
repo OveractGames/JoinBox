@@ -10,9 +10,16 @@ public class UIGameplayScreen : UIScreen
 
     [SerializeField] private LeanButton _pauseButton;
     [SerializeField] private LeanButton _reloadButton;
+    [SerializeField] private LeanButton _finishLevelButton;
 
     [SerializeField] private TMP_Text _movesText;
     [SerializeField] private TMP_Text _levelText;
+
+    [SerializeField] private GameObject _bombsCircleContainer;
+    [SerializeField] private GameObject _reloadsCircleContainer;
+
+    [SerializeField] private TMP_Text _bombsCountText;
+    [SerializeField] private TMP_Text _reloadsCountText;
 
     [SerializeField] private UIScreen _uiOutOfMovesScreen;
 
@@ -20,18 +27,50 @@ public class UIGameplayScreen : UIScreen
 
     public bool _testing = false;
 
+    private bool _haveBombs = false;
+    private bool _haveReloads = false;
+
     private void Start()
     {
         _pauseButton.OnClick.AddListener(PauseGame);
         _reloadButton.OnClick.AddListener(Reload);
+        _finishLevelButton.OnClick.AddListener(ForceFinishLevel);
         _gameplayManager.DispatchNoMovesEvent += ShowNoMovesScreen;
         _gameplayManager.OnBoxClick += UpdateUI;
         _uiOutOfMovesScreen.OnClose += HandleOutOfMovesScreenClose;
         _gameplayManager.OnCreate += UpdateUI;
+        _gameplayManager.OnLevelComplete += LevelComplete;
+
+        _gameplayManager.StartNextLevel();
+    }
+
+    private void LevelComplete()
+    {
+        PlayerPrefsManager.Instance.IncreaseLevel();
+        _uiOutOfMovesScreen.Hide();
+    }
+
+    private void ForceFinishLevel()
+    {
+        if (_haveBombs)
+        {
+            PlayerPrefsManager.Instance.DecreaseBomb();
+            UpdateUI();
+            _gameplayManager.DestroyCurrentLevelAndMoveToNext();
+        }
+        else
+        {
+            //to do
+        }
     }
 
     private void ShowNoMovesScreen()
     {
+        if (_uiOutOfMovesScreen.IsActive)
+        {
+            return;
+        }
+        AudioManager.Instance.Play(SoundType.OUT_OF_MOVES);
         _uiOutOfMovesScreen.Show();
     }
 
@@ -42,13 +81,22 @@ public class UIGameplayScreen : UIScreen
 
     private void Reload()
     {
-        GameplayManager.Instance.StartNextLevel();
+        if (_haveReloads)
+        {
+            PlayerPrefsManager.Instance.DecreaseReloads();
+            GameplayManager.Instance.StartNextLevel();
+        }
+        else
+        {
+            //to do
+        }
     }
 
     private void PauseGame()
     {
         _pauseButton.gameObject.SetActive(false);
         _reloadButton.gameObject.SetActive(false);
+        _finishLevelButton.gameObject.SetActive(false);
         _topMenu.DOAnchorPosY(200f, .5f).SetEase(Ease.InOutBack).OnComplete(() =>
         {
             _topMenu.gameObject.SetActive(false);
@@ -66,6 +114,7 @@ public class UIGameplayScreen : UIScreen
         {
             _pauseButton.gameObject.SetActive(true);
             _reloadButton.gameObject.SetActive(true);
+            _finishLevelButton.gameObject.SetActive(true);
         });
 
         Timer.Instance.StartTimer();
@@ -75,7 +124,16 @@ public class UIGameplayScreen : UIScreen
     public void UpdateUI()
     {
         _movesText.SetText(_gameplayManager.Moves.ToString());
-        _levelText.SetText(_gameplayManager.CurrentLevel.LevelIndex.ToString());
+        _levelText.SetText(PlayerPrefsManager.Instance.LevelIndex.ToString());
+
+        _haveBombs = PlayerPrefsManager.Instance.BombCount > 0;
+        _haveReloads = PlayerPrefsManager.Instance.ReloadsCount > 0;
+
+        _bombsCircleContainer.SetActive(_haveBombs);
+        _bombsCountText.SetText(PlayerPrefsManager.Instance.BombCount.ToString());
+
+        _reloadsCircleContainer.SetActive(_haveReloads);
+        _reloadsCountText.SetText(PlayerPrefsManager.Instance.ReloadsCount.ToString());
     }
 
     public override void Show()

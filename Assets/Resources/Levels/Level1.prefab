@@ -97,6 +97,7 @@ MonoBehaviour:
   blocks: []
   player: {fileID: 0}
   target: {fileID: 0}
+  levelCoins: 75
   levelIndex: 1
   moves: 1
 --- !u!1001 &735109057182378459

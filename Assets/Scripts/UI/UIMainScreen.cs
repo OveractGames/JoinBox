@@ -19,6 +19,18 @@ public class UIMainScreen : UIScreen
     private bool sfxEnabled = true;
     private bool voiceEnabled = true;
 
+    private void Start()
+    {
+        sfxEnabled = PlayerPrefs.GetInt("sfxEnabled", 1) == 1;
+        voiceEnabled = PlayerPrefs.GetInt("voiceEnabled", 1) == 1;
+
+        SettingsManager.Instance.ToggleSfx(sfxEnabled);
+        SettingsManager.Instance.ToggleVoice(voiceEnabled);
+
+        sfxButton.OnClick.AddListener(ToggleSFX);
+        voiceButton.OnClick.AddListener(ToggleVoice);
+    }
+
 
     private void GetFreeCoins()
     {
@@ -62,18 +74,10 @@ public class UIMainScreen : UIScreen
         _freeCoinsButton.OnClick.AddListener(GetFreeCoins);
         _shopButton.OnClick.AddListener(OpenShop);
 
-        sfxEnabled = PlayerPrefs.GetInt("sfxEnabled", 1) == 1;
-        voiceEnabled = PlayerPrefs.GetInt("voiceEnabled", 1) == 1;
-
-        SettingsManager.Instance.ToggleSfx(sfxEnabled);
-        SettingsManager.Instance.ToggleVoice(voiceEnabled);
-
 
         _sfxInnactiveBar.SetActive(!sfxEnabled);
         _voiceInnactiveBar.SetActive(!voiceEnabled);
 
-        sfxButton.OnClick.AddListener(ToggleSFX);
-        voiceButton.OnClick.AddListener(ToggleVoice);
         base.Show();
     }
 

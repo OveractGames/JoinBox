@@ -31,7 +31,7 @@ public class DestructibleBlock : GameplayElement
     {
         IsBlockFrozen = true;
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.bodyType = RigidbodyType2D.Static;
     }
 
     public override void Fall(GameObject target)

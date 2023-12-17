@@ -8,12 +8,14 @@ public class Timer : Singleton<Timer>
     private bool _isRunning;
     private float _elapsedSeconds;
 
+    public float ElapsedSeconds { get => _elapsedSeconds; private set => _elapsedSeconds = value; }
+
     void Update()
     {
         if (!_isRunning) return;
 
-        _elapsedSeconds += Time.deltaTime;
-        var timeSpan = TimeSpan.FromSeconds(_elapsedSeconds);
+        ElapsedSeconds += Time.deltaTime;
+        var timeSpan = TimeSpan.FromSeconds(ElapsedSeconds);
 
         if (_timeText != null)
         {
@@ -31,7 +33,7 @@ public class Timer : Singleton<Timer>
 
     public void ResetTimer()
     {
-        _elapsedSeconds = 0;
+        ElapsedSeconds = 0;
     }
 
     public void StopTimer()

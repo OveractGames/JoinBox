@@ -16,6 +16,7 @@ public class UIOutOfMovesScreen : UIScreen
             //show ad
         });
     }
+
     public override void Show()
     {
         base.Show();
