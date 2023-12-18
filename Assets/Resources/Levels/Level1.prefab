@@ -97,8 +97,6 @@ MonoBehaviour:
   blocks: []
   player: {fileID: 0}
   target: {fileID: 0}
-  levelCoins: 75
-  levelIndex: 1
   moves: 1
 --- !u!1001 &735109057182378459
 PrefabInstance:
@@ -427,6 +425,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ground
+      objectReference: {fileID: 0}
+    - target: {fileID: 4813439796744169652, guid: 43d732a63f98a5d4593e910ba1397f53,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4813439796744169653, guid: 43d732a63f98a5d4593e910ba1397f53,
         type: 3}

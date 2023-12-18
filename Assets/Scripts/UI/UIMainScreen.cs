@@ -6,8 +6,8 @@ public class UIMainScreen : UIScreen
 {
     [SerializeField] private LeanButton _coinsButton;
     [SerializeField] private LeanButton _playButton;
-    [SerializeField] private LeanButton _freeCoinsButton;
     [SerializeField] private LeanButton _shopButton;
+    [SerializeField] private LeanButton _levelsButton;
 
     [Header("SETTINGS")]
     [SerializeField] private LeanButton sfxButton;
@@ -21,6 +21,11 @@ public class UIMainScreen : UIScreen
 
     private void Start()
     {
+        _coinsButton.OnClick.AddListener(OpenShop);
+        _playButton.OnClick.AddListener(PlayGame);
+        _shopButton.OnClick.AddListener(OpenShop);
+        _levelsButton.OnClick.AddListener(OpenLevelsScreen);
+
         sfxEnabled = PlayerPrefs.GetInt("sfxEnabled", 1) == 1;
         voiceEnabled = PlayerPrefs.GetInt("voiceEnabled", 1) == 1;
 
@@ -31,12 +36,6 @@ public class UIMainScreen : UIScreen
         voiceButton.OnClick.AddListener(ToggleVoice);
     }
 
-
-    private void GetFreeCoins()
-    {
-
-    }
-
     private void PlayGame()
     {
         UIController.Instance.ShowScreen<UIGameplayScreen>();
@@ -45,6 +44,11 @@ public class UIMainScreen : UIScreen
     private void OpenShop()
     {
         UIController.Instance.ShowScreen<UIShopScreen>();
+    }
+
+    private void OpenLevelsScreen()
+    {
+        UIController.Instance.ShowScreen<UILevelsScreen>();
     }
 
     public void ToggleSFX()
@@ -69,12 +73,7 @@ public class UIMainScreen : UIScreen
 
     public override void Show()
     {
-        _coinsButton.OnClick.AddListener(OpenShop);
-        _playButton.OnClick.AddListener(PlayGame);
-        _freeCoinsButton.OnClick.AddListener(GetFreeCoins);
-        _shopButton.OnClick.AddListener(OpenShop);
-
-
+        PlayerPrefs.SetInt("BOOT", 1);
         _sfxInnactiveBar.SetActive(!sfxEnabled);
         _voiceInnactiveBar.SetActive(!voiceEnabled);
 

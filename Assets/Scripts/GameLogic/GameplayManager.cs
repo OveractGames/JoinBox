@@ -1,9 +1,10 @@
 using DG.Tweening;
+using ScriptUtils.Interface;
 using System;
 using System.Collections;
 using UnityEngine;
 
-public class GameplayManager : Singleton<GameplayManager>
+public class GameplayManager : MonoBehaviour
 {
     [SerializeField] private Transform levelContainer;
 
@@ -14,15 +15,52 @@ public class GameplayManager : Singleton<GameplayManager>
 
     public Level CurrentLevel { get => currentLevel; private set => currentLevel = value; }
     public int Moves { get => moves; private set => moves = value; }
+    public bool IsOneLevelGame { get => _isOneLevelGame; private set => _isOneLevelGame = value; }
+    public int LevelIndex { get => _levelIndex; private set => _levelIndex = value; }
 
     public event Action OnBoxClick;
     public event Action OnCreate;
     public event Action OnLevelComplete;
-    public event Action DispatchNoMovesEvent;
+    public event Action<string, RewardType> DispatchNoMovesEvent;
 
     private Coroutine _transitionCoroutine;
+
+    private bool _isOneLevelGame = false;
+
+    private int _levelIndex;
+
+    public void PlayLevel(int levelIndex)
+    {
+        IsOneLevelGame = true;
+        if (CurrentLevel != null)
+        {
+            UnsubscribeFromEvents(CurrentLevel);
+            Destroy(CurrentLevel.gameObject);
+        }
+        SpawnLevel(levelIndex);
+        SetUpLevel(CurrentLevel);
+    }
+
+    private void SpawnLevel(int index)
+    {
+        _levelIndex = index;
+        Level level = Resources.Load<Level>($"Levels/Level{index}");
+        if (level == null)
+        {
+            Debug.Log($"Cannont find level{index}");
+            return;
+        }
+        CurrentLevel = Instantiate(level, levelContainer);
+    }
+
     public void StartNextLevel()
     {
+        if(IsOneLevelGame)
+        {
+            //Navigator.getInstance().LoadLevel("Game");
+            return;
+        }
+        IsOneLevelGame = false;
         if (CurrentLevel != null)
         {
             UnsubscribeFromEvents(CurrentLevel);
@@ -32,13 +70,7 @@ public class GameplayManager : Singleton<GameplayManager>
         {
             StopCoroutine(_transitionCoroutine);
         }
-        Level level = Resources.Load<Level>($"Levels/Level{PlayerPrefsManager.Instance.LevelIndex}");
-        if (level == null)
-        {
-            Debug.Log($"Cannont find level{PlayerPrefsManager.Instance.LevelIndex}");
-            return;
-        }
-        CurrentLevel = Instantiate(level, levelContainer);
+        SpawnLevel(PlayerPrefsManager.Instance.LevelIndex);
         SetUpLevel(CurrentLevel);
     }
 
@@ -72,11 +104,11 @@ public class GameplayManager : Singleton<GameplayManager>
     private void ShowWinScreen(Level level)
     {
         OnLevelComplete?.Invoke();
-       _transitionCoroutine =  StartCoroutine(TransitionAndDestroy(level));
+        _transitionCoroutine = StartCoroutine(TransitionAndDestroy(level));
     }
 
     private IEnumerator TransitionAndDestroy(Level level)
-    {   
+    {
         yield return new WaitForSeconds(1f);
         RectTransform rectTransform = level.GetComponent<RectTransform>();
         rectTransform.DOAnchorPosX(-1000f, 1f).SetEase(Ease.Linear).OnComplete(() =>
@@ -90,10 +122,10 @@ public class GameplayManager : Singleton<GameplayManager>
     {
         if (Moves <= 0)
         {
-            DispatchNoMovesEvent?.Invoke();
+            string txt = $"Watch a short video to get +2 moves.";
+            DispatchNoMovesEvent?.Invoke(txt, RewardType.MOVES);
             return;
         }
-
         AudioManager.Instance.Play(SoundType.CLICK);
         Instantiate(destroyEffect, targetBlock.position, transform.rotation);
         Moves--;

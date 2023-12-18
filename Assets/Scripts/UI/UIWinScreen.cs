@@ -1,4 +1,5 @@
 using Lean.Gui;
+using ScriptUtils.Interface;
 using System;
 using System.Collections;
 using TMPro;
@@ -24,6 +25,12 @@ public class UIWinScreen : UIScreen
     private void MoveNext()
     {
         Hide();
+        if (_gameplayController.IsOneLevelGame)
+        {
+            PlayerPrefs.SetInt("BOOT", 0);
+            Navigator.getInstance().LoadLevel("Game");
+            return;
+        }
         _gameplayController.StartNextLevel();
     }
 
@@ -48,6 +55,10 @@ public class UIWinScreen : UIScreen
         {
             reloadsToAdd += UnityEngine.Random.Range(1, 3);
         }
+        float elapsedTime = Timer.Instance.ElapsedSeconds;
+        TimeSpan timeSpan = TimeSpan.FromSeconds(elapsedTime);
+        PlayerPrefsManager.Instance.SaveLevelTime(timeSpan);
+        
         PlayerPrefsManager.Instance.AddBomb(bombsToAdd);
         PlayerPrefsManager.Instance.AddReloads(reloadsToAdd);
 

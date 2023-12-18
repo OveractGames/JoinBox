@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
@@ -33,7 +34,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
 
     public void AddBomb(int count)
     {
-        BombCount += count ;
+        BombCount += count;
     }
 
     public void AddReloads(int count)
@@ -66,8 +67,28 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
 
     public void IncreaseLevel()
     {
+        SaveLevel(LevelKey + LevelIndex);
         LevelIndex++;
     }
 
+    public int GetLevelState(int level)
+    {
+        return PlayerPrefs.GetInt(LevelKey + level, -1);
+    }
+
+    public void SaveLevel(string key)
+    {
+        PlayerPrefs.SetInt(key, 0);
+    }
+
+    public float GetLevelTime(int level)
+    {
+        return PlayerPrefs.GetFloat(LevelKey + level + "_time");
+    }
+
+    public void SaveLevelTime(TimeSpan seconds)
+    {
+        PlayerPrefs.SetFloat(LevelKey + LevelIndex + "_time", (float)seconds.TotalSeconds);
+    }
 }
 

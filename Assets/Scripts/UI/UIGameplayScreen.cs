@@ -21,7 +21,7 @@ public class UIGameplayScreen : UIScreen
     [SerializeField] private TMP_Text _bombsCountText;
     [SerializeField] private TMP_Text _reloadsCountText;
 
-    [SerializeField] private UIScreen _uiOutOfMovesScreen;
+    [SerializeField] private UIOutOfMovesScreen _uiOutOfMovesScreen;
 
     [SerializeField] private GameplayManager _gameplayManager;
 
@@ -40,8 +40,6 @@ public class UIGameplayScreen : UIScreen
         _uiOutOfMovesScreen.OnClose += HandleOutOfMovesScreenClose;
         _gameplayManager.OnCreate += UpdateUI;
         _gameplayManager.OnLevelComplete += LevelComplete;
-
-        _gameplayManager.StartNextLevel();
     }
 
     private void LevelComplete()
@@ -60,18 +58,19 @@ public class UIGameplayScreen : UIScreen
         }
         else
         {
-            //to do
+            string txt = $"Watch a short video to get +1 bomb.";
+            _uiOutOfMovesScreen.Show(txt, RewardType.BOMBS);
         }
     }
 
-    private void ShowNoMovesScreen()
+    private void ShowNoMovesScreen(string text, RewardType type)
     {
         if (_uiOutOfMovesScreen.IsActive)
         {
             return;
         }
         AudioManager.Instance.Play(SoundType.OUT_OF_MOVES);
-        _uiOutOfMovesScreen.Show();
+        _uiOutOfMovesScreen.Show(text, type);
     }
 
     private void HandleOutOfMovesScreenClose()
@@ -84,11 +83,19 @@ public class UIGameplayScreen : UIScreen
         if (_haveReloads)
         {
             PlayerPrefsManager.Instance.DecreaseReloads();
-            GameplayManager.Instance.StartNextLevel();
+            if (_gameplayManager.IsOneLevelGame)
+            {
+                _gameplayManager.PlayLevel(_gameplayManager.LevelIndex);
+            }
+            else
+            {
+                _gameplayManager.StartNextLevel();
+            }
         }
         else
         {
-            //to do
+            string txt = $"Watch a short video to get +2 reloads.";
+            _uiOutOfMovesScreen.Show(txt, RewardType.RELOADS);
         }
     }
 
@@ -108,7 +115,7 @@ public class UIGameplayScreen : UIScreen
 
     public void StartGame()
     {
-        GameplayManager.Instance.StartNextLevel();
+        _gameplayManager.StartNextLevel();
         _topMenu.gameObject.SetActive(true);
         _topMenu.DOAnchorPosY(-25f, .5f).SetEase(Ease.InOutBack).OnComplete(() =>
         {
@@ -124,7 +131,7 @@ public class UIGameplayScreen : UIScreen
     public void UpdateUI()
     {
         _movesText.SetText(_gameplayManager.Moves.ToString());
-        _levelText.SetText(PlayerPrefsManager.Instance.LevelIndex.ToString());
+        _levelText.SetText(_gameplayManager.LevelIndex.ToString());
 
         _haveBombs = PlayerPrefsManager.Instance.BombCount > 0;
         _haveReloads = PlayerPrefsManager.Instance.ReloadsCount > 0;

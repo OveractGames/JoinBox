@@ -43,7 +43,6 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                     }
 
                     // Make instance persistent.
-                    DontDestroyOnLoad(_mInstance.gameObject);
                     UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneChanged;
                 }
 
