@@ -1,16 +1,32 @@
 using Lean.Gui;
 using System;
+using TMPro;
 using UnityEngine;
 
 public class UIShopScreen : UIScreen
 {
     [SerializeField] private CoinsPackButton[] _coinsPackButtons;
 
-    [SerializeField] private LeanButton _watchAdGetCoinsButton;
+    [SerializeField] private TMP_Text _bombCountText;
+    [SerializeField] private TMP_Text _reloadsCountText;
+
+    [SerializeField] private RewardedAdsButton _rewardedAdsButton_1;
+    [SerializeField] private RewardedAdsButton _rewardedAdsButton_2;
+
     [SerializeField] private LeanButton _buyMeCoffeeButton;
     [SerializeField] private LeanButton _closeButton;
 
-    private int _coinsBought = 0;
+    private void Start()
+    {
+        _rewardedAdsButton_1.OnComplete += Show;
+        _rewardedAdsButton_2.OnComplete += Show;
+        _buyMeCoffeeButton.OnClick.AddListener(BuyMeCoffe);
+        _closeButton.OnClick.AddListener(CloseShop);
+        foreach (CoinsPackButton coinsButton in _coinsPackButtons)
+        {
+            coinsButton.OnPackClick += BuyPack;
+        }
+    }
 
     private void CloseShop()
     {
@@ -22,16 +38,10 @@ public class UIShopScreen : UIScreen
         //to do
     }
 
-    private void WatchAdGetCoins()
-    {
-        //to do
-    }
-
     private void BuyPack(int index, int coins)
     {
-        _coinsBought = coins;
-       // IAPManager.Instance.BuyProduct(index);
-       // IAPManager.Instance.OnPurchaseComplete += PackPurchaseCompleted;
+        // IAPManager.Instance.BuyProduct(index);
+        // IAPManager.Instance.OnPurchaseComplete += PackPurchaseCompleted;
     }
 
     private void PackPurchaseCompleted()
@@ -43,13 +53,11 @@ public class UIShopScreen : UIScreen
     public override void Show()
     {
         base.Show();
-        foreach (CoinsPackButton coinsButton in _coinsPackButtons)
-        {
-            coinsButton.OnPackClick += BuyPack;
-        }
-        _watchAdGetCoinsButton.OnClick.AddListener(WatchAdGetCoins);
-        _buyMeCoffeeButton.OnClick.AddListener(BuyMeCoffe);
-        _closeButton.OnClick.AddListener(CloseShop);
+
+        _rewardedAdsButton_1.LoadAd();
+        _rewardedAdsButton_2.LoadAd();
+        _bombCountText.SetText("x" + PlayerPrefsManager.Instance.BombCount.ToString());
+        _reloadsCountText.SetText("x" + PlayerPrefsManager.Instance.ReloadsCount.ToString());
     }
 
     public override void Hide()

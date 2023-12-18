@@ -44,7 +44,10 @@ public class UIGameplayScreen : UIScreen
 
     private void LevelComplete()
     {
-        PlayerPrefsManager.Instance.IncreaseLevel();
+        if (!_gameplayManager.IsOneLevelGame)
+        {
+            PlayerPrefsManager.Instance.IncreaseLevel();
+        }
         _uiOutOfMovesScreen.Hide();
     }
 

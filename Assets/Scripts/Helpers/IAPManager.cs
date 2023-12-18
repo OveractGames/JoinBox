@@ -1,4 +1,3 @@
-#if HOME
 using System;
 using UnityEngine;
 using UnityEngine.Purchasing;
@@ -10,9 +9,9 @@ public class IAPManager : Singleton<IAPManager>, IStoreListener
 
     private readonly string[] _packs = new string[]
     {
-        "com.overactgames.joinbox.pack1000",
-        "com.overactgames.joinbox.pack2500",
-        "com.overactgames.joinbox.pack5000"
+        "com.overactgames.joinbox.pack_10_bomb",
+        "com.overactgames.joinbox.pack_10_reloads",
+        "com.overactgames.joinbox.pack_15_bomb_and_reloads"
     };
 
     public event Action OnPurchaseComplete;
@@ -72,4 +71,3 @@ public class IAPManager : Singleton<IAPManager>, IStoreListener
         Debug.Log("Failed to initialize IAPManager: " + error + " : " + message);
     }
 }
-#endif

@@ -7,7 +7,7 @@ public class Boot : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("BOOT") == 1)
+        if (PlayerPrefs.GetInt("BOOT") == 0)
         {
             _loadingScreen.Show();
             if (!_loadingScreen.initializeOnStart)

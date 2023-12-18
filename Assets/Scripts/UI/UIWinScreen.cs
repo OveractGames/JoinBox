@@ -27,7 +27,7 @@ public class UIWinScreen : UIScreen
         Hide();
         if (_gameplayController.IsOneLevelGame)
         {
-            PlayerPrefs.SetInt("BOOT", 0);
+            PlayerPrefs.SetInt("BOOT", 1);
             Navigator.getInstance().LoadLevel("Game");
             return;
         }
@@ -55,6 +55,7 @@ public class UIWinScreen : UIScreen
         {
             reloadsToAdd += UnityEngine.Random.Range(1, 3);
         }
+        Timer.Instance.StopTimer();
         float elapsedTime = Timer.Instance.ElapsedSeconds;
         TimeSpan timeSpan = TimeSpan.FromSeconds(elapsedTime);
         PlayerPrefsManager.Instance.SaveLevelTime(timeSpan);
@@ -66,6 +67,7 @@ public class UIWinScreen : UIScreen
         _fireworks.SetActive(true);
         AudioManager.Instance.Play(SoundType.WIN);
         _sourceCoroutine = StartCoroutine(PlayFireworkSound());
+        
         base.Show();
     }
 

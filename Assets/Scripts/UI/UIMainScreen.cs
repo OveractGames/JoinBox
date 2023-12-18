@@ -1,5 +1,6 @@
 using Lean.Gui;
 using System;
+using TMPro;
 using UnityEngine;
 
 public class UIMainScreen : UIScreen
@@ -8,6 +9,9 @@ public class UIMainScreen : UIScreen
     [SerializeField] private LeanButton _playButton;
     [SerializeField] private LeanButton _shopButton;
     [SerializeField] private LeanButton _levelsButton;
+
+    [SerializeField] private TMP_Text _bombCountText;
+    [SerializeField] private TMP_Text _reloadsCountText;
 
     [Header("SETTINGS")]
     [SerializeField] private LeanButton sfxButton;
@@ -73,9 +77,11 @@ public class UIMainScreen : UIScreen
 
     public override void Show()
     {
-        PlayerPrefs.SetInt("BOOT", 1);
+        PlayerPrefs.SetInt("BOOT", 0);
         _sfxInnactiveBar.SetActive(!sfxEnabled);
         _voiceInnactiveBar.SetActive(!voiceEnabled);
+        _bombCountText.SetText("x" + PlayerPrefsManager.Instance.BombCount.ToString());
+        _reloadsCountText.SetText("x" + PlayerPrefsManager.Instance.ReloadsCount.ToString());
 
         base.Show();
     }

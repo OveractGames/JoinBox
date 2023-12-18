@@ -55,6 +55,8 @@ public class GameplayManager : MonoBehaviour
 
     public void StartNextLevel()
     {
+        Timer.Instance.ResetTimer();
+        Timer.Instance.StartTimer();
         if(IsOneLevelGame)
         {
             //Navigator.getInstance().LoadLevel("Game");
