@@ -1,3 +1,4 @@
+#if HOME
 using Lean.Gui;
 using System.Collections;
 using System.Collections.Generic;
@@ -57,3 +58,4 @@ public class InterstitialAdHelper : MonoBehaviour, IUnityAdsLoadListener, IUnity
     public void OnUnityAdsShowClick(string _adUnitId) { }
     public void OnUnityAdsShowComplete(string _adUnitId, UnityAdsShowCompletionState showCompletionState) { }
 }
+#endif

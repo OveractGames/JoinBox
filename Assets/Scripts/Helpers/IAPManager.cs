@@ -1,3 +1,4 @@
+#if HOME
 using System;
 using UnityEngine;
 using UnityEngine.Purchasing;
@@ -71,3 +72,4 @@ public class IAPManager : Singleton<IAPManager>, IStoreListener
         Debug.Log("Failed to initialize IAPManager: " + error + " : " + message);
     }
 }
+#endif

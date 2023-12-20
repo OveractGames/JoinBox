@@ -13,6 +13,10 @@ public class DestructibleBlock : GameplayElement
 
     private void Start()
     {
+        if(GetComponent<ObjectDragDrop>() != null)
+        {
+            return;
+        }
         gameObject.AddComponent<MouseEventSystem>().MouseEvent += OnBlockClick;
     }
 

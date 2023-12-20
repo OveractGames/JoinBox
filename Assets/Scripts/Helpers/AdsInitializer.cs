@@ -1,3 +1,4 @@
+#if HOME
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,3 +42,4 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
         Debug.Log($"Unity Ads Initialization Failed: {error.ToString()} - {message}");
     }
 }
+#endif

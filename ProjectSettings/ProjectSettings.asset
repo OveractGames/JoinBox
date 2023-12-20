@@ -674,7 +674,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    7: WindowBase;DEF_IAP
+    7: WindowBase;DEF_IAP;DEVELOPEMENT
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

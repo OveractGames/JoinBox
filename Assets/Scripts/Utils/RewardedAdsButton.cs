@@ -1,3 +1,4 @@
+#if HOME
 using Lean.Gui;
 using System;
 using UnityEngine;
@@ -92,3 +93,4 @@ public class RewardedAdsButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAds
     public void OnUnityAdsShowStart(string adUnitId) { }
     public void OnUnityAdsShowClick(string adUnitId) { }
 }
+#endif

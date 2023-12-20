@@ -36,6 +36,7 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
 
     private void Awake()
     {
+#if PRODUCTION
         blocks = GetComponentsInChildren<DestructibleBlock>();
         player = GetComponentInChildren<PlayerTarget>();
         target = GameObject.FindGameObjectWithTag("target");
@@ -47,10 +48,12 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
                 t.gameObject.SetActive(false);
             }
         }
+#endif
     }
 
     private void Start()
     {
+#if PRODUCTION
         foreach (DestructibleBlock block in blocks)
         {
             block.OnBlockClickEvent += OnBlockClick;
@@ -59,6 +62,7 @@ public class Level : MonoBehaviour, IBlockDestroyListener, ILevelCompleteListene
         player.Init(target.transform);
         player.OnFall += Fall;
         player.OnTargetFound += OnLevelDone;
+#endif
     }
 
     public void OnBlockDestroy(Transform blockTransform)
