@@ -35,13 +35,11 @@ public class PlayerTarget : GameplayElement
     public override void Freeze()
     {
         _isFrozen = true;
-        _rb.bodyType = RigidbodyType2D.Kinematic;
-        _rb.velocity = Vector2.zero;
+        _rb.bodyType = RigidbodyType2D.Static;
 
         if (_targetRb != null)
         {
-            _targetRb.bodyType = RigidbodyType2D.Kinematic;
-            _targetRb.velocity = Vector2.zero;
+            _targetRb.bodyType = RigidbodyType2D.Static;
         }
     }
 
@@ -64,6 +62,20 @@ public class PlayerTarget : GameplayElement
             {
                 Fall(_targetRb.gameObject);
             }
+        }
+    }
+
+    public override void Unfreeze()
+    {
+        _isFrozen = false;
+        if(_rb == null)
+        {
+            _rb = GetComponent<Rigidbody2D>();
+        }
+        _rb.bodyType = RigidbodyType2D.Dynamic;
+        if (_targetRb != null)
+        {
+            _targetRb.bodyType = RigidbodyType2D.Dynamic;
         }
     }
 }

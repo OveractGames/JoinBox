@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 4787443387728412009}
   - component: {fileID: 4664668643583273824}
   - component: {fileID: 3460213011602783420}
-  - component: {fileID: 721321159151877070}
   - component: {fileID: 5615394152660765472}
   - component: {fileID: 1140693950102200897}
   m_Layer: 5
@@ -127,20 +126,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 200, y: 100}
   m_EdgeRadius: 0
---- !u!114 &721321159151877070
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4787443387728412011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6d381a83474be84d86f86148f93cd7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsDestructible: 1
-  IsBlockFrozen: 0
 --- !u!114 &5615394152660765472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,6 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a0ea0a81bb2551438588e3da32a52ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parent: {fileID: 0}
   type: 1
 --- !u!225 &1140693950102200897
 CanvasGroup:

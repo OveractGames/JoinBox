@@ -34,7 +34,7 @@ public class ObjectDragDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
     private void Awake()
     {
-        canvas = FindObjectOfType<Canvas>();
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
     }
@@ -68,19 +68,18 @@ public class ObjectDragDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        OnBoxClick?.Invoke(this);
         if (eventData.button == PointerEventData.InputButton.Right)
         {
             Destroy(gameObject);
+        }
+        else
+        {
+            OnBoxClick?.Invoke(this);
         }
     }
 
     public void SetType(int type, Sprite star)
     {
-        if(GetComponent<PlayerTarget>()  != null)
-        {
-            return;
-        }
         if(type == 0)
         {
             gameObject.tag = "target";

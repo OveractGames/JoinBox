@@ -1,16 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class GridSlot : MonoBehaviour, IDropHandler
+public class GridSlot : MonoBehaviour, IDropHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IEndDragHandler, IDragHandler,IPointerClickHandler
 {
-    public RectTransform rectTransform1;
-    public RectTransform rectTransform2;
+    public RectTransform rectTransform;
 
+    public event Action<GridSlot> OnClick;
     private void Awake()
     {
-        rectTransform1 = GetComponent<RectTransform>();
+        rectTransform = GetComponent<RectTransform>();
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -44,27 +45,39 @@ public class GridSlot : MonoBehaviour, IDropHandler
         RectTransform rectTransform = eventData.pointerDrag.GetComponent<RectTransform>();
         if (rectTransform != null)
         {
-            Vector3 pos = new Vector3(rectTransform1.anchoredPosition.x + offsetX, rectTransform1.anchoredPosition.y + offsetY, 0f);
+            Vector3 pos = new Vector3(this.rectTransform.anchoredPosition.x + offsetX, this.rectTransform.anchoredPosition.y + offsetY, 0f);
             rectTransform.anchoredPosition = pos;
             //rectTransform.SetParent(rectTransform1);
-            target.parent = rectTransform1;
         }
     }
 
-    private bool CheckRectOverlap(RectTransform rectTransform1, RectTransform rectTransform2)
+    public void OnPointerDown(PointerEventData eventData)
     {
-        Rect rect1 = GetScreenRect(rectTransform1);
-        Rect rect2 = GetScreenRect(rectTransform2);
-
-        return rect1.Overlaps(rect2);
+        
     }
 
-    private Rect GetScreenRect(RectTransform rectTransform)
+    public void OnPointerUp(PointerEventData eventData)
     {
-        Vector3[] corners = new Vector3[4];
-        rectTransform.GetWorldCorners(corners);
+       
+    }
 
-        Rect rect = new Rect(corners[0], corners[2] - corners[0]);
-        return rect;
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+       
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+       
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        OnClick?.Invoke(this);
     }
 }

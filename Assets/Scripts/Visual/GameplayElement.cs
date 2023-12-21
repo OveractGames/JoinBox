@@ -8,4 +8,6 @@ public abstract class GameplayElement : MonoBehaviour
     public abstract void Fall(GameObject target);
 
     public abstract void Freeze();
+
+    public abstract void Unfreeze();
 }

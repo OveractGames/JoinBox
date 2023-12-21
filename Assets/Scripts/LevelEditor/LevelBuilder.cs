@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LevelBuilder : MonoBehaviour
@@ -42,7 +44,7 @@ public class LevelBuilder : MonoBehaviour
         }
     }
 
-    private void Save()
+    private async void Save()
     {
         if (level != null)
         {
@@ -54,16 +56,37 @@ public class LevelBuilder : MonoBehaviour
             {
                 Destroy(obj.GetComponent<ObjectDragDrop>());
                 Destroy(obj.GetComponent<CanvasGroup>());
-                obj.transform.SetParent(obj.parent);
+                obj.transform.SetParent(level.transform);
             }
+            await Task.Delay(100);
             Level lvl = Instantiate(level, canvas.transform);
+            lvl.transform.localScale = new Vector3(0.75f, 0.75f, 1f);
+            await Task.Delay(100);
+            foreach(Transform t in lvl.transform)
+            {
+                if (t.name.StartsWith("cell"))
+                {
+                    Destroy(t.gameObject);
+                }
+                else
+                {
+                    if(t.CompareTag("enemy"))
+                    {
+                        t.gameObject.AddComponent<DestructibleBlock>();
+                    }else if(t.CompareTag("Player"))
+                    {
+                        t.gameObject.AddComponent<PlayerTarget>();
+                    }
+                }
+            }
 
-            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(lvl.gameObject, $"Assets/Prefabs/Levels/Level{lastSavedIndex}.prefab");
+            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(lvl.gameObject, $"Assets/Resources/NewLevels/Level{lastSavedIndex}.prefab");
             if (prefab != null)
             {
                 Debug.Log("Prefab saved successfully at: " + AssetDatabase.GetAssetPath(prefab));
                 PlayerPrefs.SetInt("SAVED_LEVEL", lastSavedIndex);
                 Destroy(lvl.gameObject);
+                SceneManager.LoadScene("LevelBuilder");
             }
             else
             {

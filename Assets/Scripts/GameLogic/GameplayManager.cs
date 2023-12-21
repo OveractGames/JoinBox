@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class GameplayManager : MonoBehaviour
 {
+    [SerializeField] private GameObject boxDestroyEffect;
     [SerializeField] private Transform levelContainer;
 
     [SerializeField] private GameObject destroyEffect;
@@ -57,7 +58,7 @@ public class GameplayManager : MonoBehaviour
     {
         Timer.Instance.ResetTimer();
         Timer.Instance.StartTimer();
-        if(IsOneLevelGame)
+        if (IsOneLevelGame)
         {
             //Navigator.getInstance().LoadLevel("Game");
             return;
@@ -84,9 +85,12 @@ public class GameplayManager : MonoBehaviour
 
         RectTransform rectTransform = level.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = new Vector2(1000f, 125f);
-        rectTransform.DOAnchorPosX(8f, 1f).SetEase(Ease.Linear);
+        rectTransform.DOAnchorPosX(8f, 1f).SetEase(Ease.Linear).OnComplete(() =>
+        {
+            level.UnfreezeLevel();
+        });
 
-        Moves = level.Moves;
+        Moves = 20;// level.Moves;
         OnCreate?.Invoke();
     }
 
@@ -128,6 +132,7 @@ public class GameplayManager : MonoBehaviour
             DispatchNoMovesEvent?.Invoke(txt, RewardType.MOVES);
             return;
         }
+        Instantiate(boxDestroyEffect, targetBlock.position, Quaternion.identity);
         AudioManager.Instance.Play(SoundType.CLICK);
         Instantiate(destroyEffect, targetBlock.position, transform.rotation);
         Moves--;

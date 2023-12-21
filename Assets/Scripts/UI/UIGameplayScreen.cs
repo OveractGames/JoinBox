@@ -78,7 +78,7 @@ public class UIGameplayScreen : UIScreen
 
     private void HandleOutOfMovesScreenClose()
     {
-        _gameplayManager.CurrentLevel.Unfreeze();
+        _gameplayManager.CurrentLevel.UnfreezeLevel();
     }
 
     private void Reload()
@@ -128,7 +128,7 @@ public class UIGameplayScreen : UIScreen
         });
 
         Timer.Instance.StartTimer();
-        _gameplayManager.CurrentLevel.Unfreeze();
+        //_gameplayManager.CurrentLevel.Unfreeze();
     }
 
     public void UpdateUI()
